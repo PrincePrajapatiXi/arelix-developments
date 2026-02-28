@@ -17,9 +17,8 @@ import { Copy, Check, Users, ChevronDown, Zap } from "lucide-react"; // Icons
 // ─── Constants ─────────────────────────────────────────────────
 // Extracted as constants so values are easy to find and tweak.
 const SERVER_IP = "play.armysmp.fun";       // The IP copied to clipboard
-const BASE_PLAYER_COUNT = 127;              // Minimum simulated player count
-const PLAYER_COUNT_VARIANCE = 40;           // Random range added on top
-const PLAYER_COUNT_INTERVAL_MS = 8000;      // Refresh interval (8 seconds)
+const STATUS_API_URL = `https://api.mcsrvstat.us/3/${SERVER_IP}`; // Live server status
+const STATUS_POLL_INTERVAL_MS = 60000;      // Poll every 60 seconds
 const COPY_FEEDBACK_DURATION_MS = 2000;     // "Copied!" message duration
 
 // ═══════════════════════════════════════════════════════════════
@@ -28,19 +27,34 @@ const COPY_FEEDBACK_DURATION_MS = 2000;     // "Copied!" message duration
 
 export default function HeroSection() {
     // ── State ──
-    const [copied, setCopied] = useState(false);      // True while "IP Copied!" is showing
-    const [playerCount, setPlayerCount] = useState(0); // Simulated online player count
+    const [copied, setCopied] = useState(false);
+    const [serverStatus, setServerStatus] = useState<{
+        online: boolean;
+        players: number;
+        maxPlayers: number;
+        loading: boolean;
+    }>({ online: false, players: 0, maxPlayers: 0, loading: true });
 
-    // ── Simulated Player Count (runs once on mount) ──
-    // Generates a random number near BASE_PLAYER_COUNT and refreshes every 8s.
-    // TODO: Replace with real Minecraft server status API for production.
+    // ── Live Server Status (polls real Minecraft server) ──
     useEffect(() => {
-        const randomize = () => BASE_PLAYER_COUNT + Math.floor(Math.random() * PLAYER_COUNT_VARIANCE);
+        const fetchStatus = async () => {
+            try {
+                const res = await fetch(STATUS_API_URL);
+                const data = await res.json();
+                setServerStatus({
+                    online: data.online ?? false,
+                    players: data.players?.online ?? 0,
+                    maxPlayers: data.players?.max ?? 0,
+                    loading: false,
+                });
+            } catch {
+                setServerStatus({ online: false, players: 0, maxPlayers: 0, loading: false });
+            }
+        };
 
-        setPlayerCount(randomize()); // Set initial value immediately
-        const interval = setInterval(() => setPlayerCount(randomize()), PLAYER_COUNT_INTERVAL_MS);
-
-        return () => clearInterval(interval); // Cleanup: prevent memory leaks on unmount
+        fetchStatus(); // Fetch immediately on mount
+        const interval = setInterval(fetchStatus, STATUS_POLL_INTERVAL_MS);
+        return () => clearInterval(interval);
     }, []);
 
     // ── Copy Server IP to Clipboard ──
@@ -191,22 +205,42 @@ export default function HeroSection() {
                     </a>
                 </motion.div>
 
-                {/* ── Live Player Count Indicator ── */}
+                {/* ── Live Server Status Indicator ── */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8 }}
                     className="mt-12 inline-flex items-center gap-3 rounded-full border border-white/5 bg-surface-secondary/40 px-5 py-2.5 backdrop-blur-sm"
                 >
-                    {/* Pulsing green dot: signals "server is online" */}
-                    <span className="relative flex h-3 w-3">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-green opacity-75" />
-                        <span className="relative inline-flex h-3 w-3 rounded-full bg-neon-green" />
-                    </span>
-                    <Users className="h-4 w-4 text-white/40" />
-                    <span className="text-sm text-white/60">
-                        <span className="font-semibold text-neon-green">{playerCount}</span> players online
-                    </span>
+                    {serverStatus.loading ? (
+                        <>
+                            {/* Loading state */}
+                            <span className="relative flex h-3 w-3">
+                                <span className="relative inline-flex h-3 w-3 rounded-full bg-white/30" />
+                            </span>
+                            <span className="text-sm text-white/40">Checking server...</span>
+                        </>
+                    ) : serverStatus.online ? (
+                        <>
+                            {/* Online: green pulsing dot + player count */}
+                            <span className="relative flex h-3 w-3">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon-green opacity-75" />
+                                <span className="relative inline-flex h-3 w-3 rounded-full bg-neon-green" />
+                            </span>
+                            <Users className="h-4 w-4 text-white/40" />
+                            <span className="text-sm text-white/60">
+                                <span className="font-semibold text-neon-green">{serverStatus.players}/{serverStatus.maxPlayers}</span> Online
+                            </span>
+                        </>
+                    ) : (
+                        <>
+                            {/* Offline: red dot */}
+                            <span className="relative flex h-3 w-3">
+                                <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
+                            </span>
+                            <span className="text-sm text-red-400/80">Server Offline</span>
+                        </>
+                    )}
                 </motion.div>
             </div>
 
