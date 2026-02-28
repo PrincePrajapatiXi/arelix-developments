@@ -53,10 +53,10 @@ export async function sendOrderEmail(order: OrderEmailData) {
     const html = `
     <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:500px;margin:0 auto;background:#1a1a2e;border-radius:16px;overflow:hidden;border:1px solid #2a2a3e;">
         
-        <!-- Header -->
+        // Header -->
         <div style="background:linear-gradient(135deg,#0f3460,#16213e);padding:24px;text-align:center;">
             <h1 style="margin:0;color:#00ff88;font-size:22px;letter-spacing:1px;">⚔️ New Order Received</h1>
-            <p style="margin:6px 0 0;color:#888;font-size:12px;">Army SMP Store — Arelix Developments</p>
+            <p style="margin:6px 0 0;color:#888;font-size:12px;">Arelix Developments</p>
         </div>
 
         <!-- Order Info -->
@@ -115,7 +115,7 @@ export async function sendOrderEmail(order: OrderEmailData) {
     `;
 
     const mailOptions = {
-        from: `"⚔️ Army SMP Store" <${process.env.GMAIL_USER}>`,
+        from: `"⚔️ Arelix Developments" <${process.env.GMAIL_USER}>`,
         to: process.env.NOTIFY_EMAIL,
         subject: `📦 New Order — ${order.username} — ₹${order.total.toFixed(2)}`,
         html,

@@ -157,16 +157,21 @@ export async function POST(request: Request) {
         console.log("═══════════════════════════════════════");
 
         // ──────────────────────────────────────────────────────
-        // 8b. Send email notification (non-blocking)
+        // 8b. Send email notification
         // ──────────────────────────────────────────────────────
-        sendOrderEmail({
-            orderId,
-            username,
-            edition,
-            utrNumber,
-            items: validatedItems,
-            total: totalAmount,
-        }).catch((err) => console.error("Email send failed:", err));
+        try {
+            await sendOrderEmail({
+                orderId,
+                username,
+                edition,
+                utrNumber,
+                items: validatedItems,
+                total: totalAmount,
+            });
+            console.log("✅ Email notification sent successfully!");
+        } catch (emailErr) {
+            console.error("❌ Email send failed:", emailErr);
+        }
 
         // ──────────────────────────────────────────────────────
         // 🔌 DATABASE HOOK — Save order to your database here
