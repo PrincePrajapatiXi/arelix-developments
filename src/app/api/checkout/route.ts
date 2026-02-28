@@ -13,6 +13,7 @@
 
 import { NextResponse } from "next/server";
 import { products } from "@/lib/data";
+import { sendOrderEmail } from "@/lib/sendOrderEmail";
 
 // ─── Request Body Types ────────────────────────────────────────
 
@@ -154,6 +155,18 @@ export async function POST(request: Request) {
         console.log(`  Total:     ₹${totalAmount}`);
         console.log(`  Items:     ${validatedItems.map((i) => `${i.name} x${i.quantity}`).join(", ")}`);
         console.log("═══════════════════════════════════════");
+
+        // ──────────────────────────────────────────────────────
+        // 8b. Send email notification (non-blocking)
+        // ──────────────────────────────────────────────────────
+        sendOrderEmail({
+            orderId,
+            username,
+            edition,
+            utrNumber,
+            items: validatedItems,
+            total: totalAmount,
+        }).catch((err) => console.error("Email send failed:", err));
 
         // ──────────────────────────────────────────────────────
         // 🔌 DATABASE HOOK — Save order to your database here
