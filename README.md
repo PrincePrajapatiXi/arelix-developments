@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚔️ Army SMP Store — Arelix Developments
 
-## Getting Started
+> 🎮 A premium Minecraft server store built with **Next.js**, **Tailwind CSS**, and **Framer Motion**
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-FF0050?style=for-the-badge&logo=framer)
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 🛒 **Smart Cart** | Zustand-powered cart with add/remove, quantity controls, and toast notifications |
+| 💳 **UPI Checkout** | Dynamic QR code (amount-locked), Minecraft username input, UTR verification |
+| 🎮 **Java/Bedrock Toggle** | Auto-formats Bedrock usernames with `.` prefix and `_` for spaces |
+| 📱 **Mobile-First Design** | Horizontal swipeable product rows, collapsible footer accordions |
+| 🔍 **Product Detail Modal** | Click any card to see full perks, description & add to cart |
+| 🏷️ **Categorized Layout** | Products grouped by Ranks, Kits, Keys, Misc — each with own scroll row |
+| 🎬 **Smooth Animations** | Framer Motion powered slide transitions, hover effects, particle floats |
+| 🌙 **Dark Gaming Theme** | Premium zinc-900 base with neon green/purple/cyan accent colors |
+
+---
+
+## 🚀 Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/PrincePrajapatiXi/arelix-developments.git
+cd arelix-developments
+
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Project Structure
 
-## Learn More
+```
+army-smp-store/
+├── public/                  # Static assets (QR code, images)
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx       # Root layout with fonts & metadata
+│   │   ├── page.tsx         # Main landing page
+│   │   └── api/
+│   │       └── checkout/
+│   │           └── route.ts # POST endpoint for order processing
+│   ├── components/
+│   │   ├── Navbar.tsx       # Top navigation with category tabs
+│   │   ├── HeroSection.tsx  # Hero banner with floating particles
+│   │   ├── ProductGrid.tsx  # Categorized product rows + modal
+│   │   ├── ProductCard.tsx  # Individual product card (mobile-optimized)
+│   │   ├── ProductDetailModal.tsx  # Full product detail popup
+│   │   ├── CartSidebar.tsx  # 4-step checkout flow sidebar
+│   │   ├── CartItemRow.tsx  # Single cart item with quantity controls
+│   │   ├── RecentPurchases.tsx  # Scrolling purchase ticker
+│   │   └── Footer.tsx       # Accordion footer (mobile-friendly)
+│   ├── store/
+│   │   └── useCartStore.ts  # Zustand global cart state
+│   └── lib/
+│       └── data.ts          # Product catalog & type definitions
+└── tailwind.config.ts       # Custom theme (neon colors, glows)
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛒 Checkout Flow
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+Cart → Username Input → UPI Payment → Order Confirmation
+```
 
-## Deploy on Vercel
+1. **Cart View** — Review items, adjust quantities, see subtotal
+2. **Username** — Java/Bedrock toggle, case-sensitive warning, validation
+3. **UPI Payment** — Dynamic QR with locked amount, 12-digit UTR input
+4. **Result** — Success with order ID or error with retry
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Tech Stack
+
+- **Framework** — [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **Styling** — [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animations** — [Framer Motion](https://www.framer.com/motion/)
+- **State** — [Zustand](https://zustand-demo.pmnd.rs/)
+- **Icons** — [Lucide React](https://lucide.dev/)
+- **QR Code** — [qrcode.react](https://github.com/zpao/qrcode.react)
+- **Language** — TypeScript
+
+---
+
+## ⚙️ Configuration
+
+| Setting | File | Description |
+|---|---|---|
+| UPI ID | `CartSidebar.tsx` | `UPI_ID` constant at top |
+| Payee Name | `CartSidebar.tsx` | `PAYEE_NAME` constant |
+| Products | `lib/data.ts` | Add/edit products catalog |
+| Categories | `lib/data.ts` | Modify `categories` array |
+| Community Links | `Footer.tsx` | Discord, Twitter, YouTube, Instagram URLs |
+
+---
+
+## 📱 Responsive Design
+
+- **Mobile** — Horizontal swipeable product carousel, accordion footer, compact cards
+- **Tablet** — 3-column product grid, expanded footer
+- **Desktop** — Full 4-column grid, hover effects, glow animations
+
+---
+
+## 📄 License
+
+This project is proprietary to **Arelix Developments**.
+
+---
+
+<p align="center">
+  Made with ❤️ by <b>Arelix Developments</b>
+</p>
