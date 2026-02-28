@@ -33,12 +33,12 @@ const orbitron = Orbitron({
 // tags in the <head> of every page automatically.
 
 export const metadata: Metadata = {
-  title: "Army SMP Store — Ranks, Kits, Keys & More",
+  title: "Arelix Developments Store — Ranks, Kits, Keys & More",
   description:
-    "Upgrade your Minecraft experience on Army SMP. Buy exclusive ranks, powerful kits, rare crate keys, and unique cosmetics. Instant delivery.",
+    "Upgrade your Minecraft experience on Arelix Developments. Buy exclusive ranks, powerful kits, rare crate keys, and unique cosmetics. Instant delivery.",
   keywords: [
     "Minecraft",
-    "Army SMP",
+    "Arelix Developments",
     "Minecraft store",
     "ranks",
     "kits",
@@ -46,10 +46,10 @@ export const metadata: Metadata = {
     "Minecraft server",
   ],
   openGraph: {
-    title: "Army SMP Store",
+    title: "Arelix Developments Store",
     description: "Premium Minecraft server store — Ranks, Kits, Keys & Cosmetics",
     url: "https://store.armysmp.fun",
-    siteName: "Army SMP",
+    siteName: "Arelix Developments",
     type: "website",
   },
 };

@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: Navbar.tsx
 // PURPOSE: Fixed top navigation bar with:
-//          - Brand logo (Sword icon + "ARMYSMP")
+//          - Brand logo (Sword icon + "Arelix Developments")
 //          - Desktop category tabs with animated active indicator
 //          - Cart button
 //          - Responsive mobile menu (hamburger → slide-down)
@@ -51,9 +51,9 @@ export default function Navbar({ activeCategory, onCategoryChange }: NavbarProps
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neon-green/10 border border-neon-green/20 group-hover:shadow-glow-green transition-all duration-300">
                         <Sword className="h-5 w-5 text-neon-green" />
                     </div>
-                    {/* Brand name: "ARMY" in white + "SMP" in neon green */}
+                    {/* Brand name */}
                     <span className="font-[family-name:var(--font-display)] text-lg font-bold tracking-wider text-white">
-                        ARMY<span className="text-neon-green">SMP</span>
+                        Arelix <span className="text-neon-green">Developments</span>
                     </span>
                 </a>
 
