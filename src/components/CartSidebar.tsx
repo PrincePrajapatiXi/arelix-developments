@@ -482,6 +482,21 @@ export default function CartSidebar() {
                                                 <p className="text-[11px] text-white/25">
                                                     Scan to pay with any UPI app
                                                 </p>
+                                                {/* Payment method badges */}
+                                                <div className="flex flex-wrap items-center justify-center gap-1.5 mt-1">
+                                                    <span className="rounded border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-bold text-white/40">
+                                                        UPI
+                                                    </span>
+                                                    <span className="rounded border border-[#168AFF]/30 bg-[#168AFF]/10 px-2 py-0.5 text-[10px] font-bold text-[#168AFF]/70">
+                                                        GPay
+                                                    </span>
+                                                    <span className="rounded border border-[#5F259F]/30 bg-[#5F259F]/10 px-2 py-0.5 text-[10px] font-bold text-[#5F259F]/70">
+                                                        PhonePe
+                                                    </span>
+                                                    <span className="rounded border border-[#00BAF2]/30 bg-[#00BAF2]/10 px-2 py-0.5 text-[10px] font-bold text-[#00BAF2]/70">
+                                                        Paytm
+                                                    </span>
+                                                </div>
                                                 <p className="text-xs text-white/30">Scan QR or pay to:</p>
                                                 {/* UPI ID display — click to copy */}
                                                 <button

@@ -13,11 +13,16 @@
 
 // ─── Imports ───────────────────────────────────────────────────
 import { useState } from "react";
-import { Sword, Heart, ChevronDown } from "lucide-react";
+import { Sword, Heart, ChevronDown, Mail } from "lucide-react";
 
 // ─── Link Data ─────────────────────────────────────────────────
 
-const quickLinks = ["Home", "Store", "Rules", "Support"];
+const quickLinks = [
+    { label: "Home", url: "#" },
+    { label: "Store", url: "#store" },
+    { label: "Rules", url: "#" },
+    { label: "Support", url: "https://mail.google.com/mail/?view=cm&to=princeprajapti2589@gmail.com" },
+];
 
 const communityLinks = [
     { label: "Discord", url: "https://discord.gg/hyt5ZQ9QSR" },
@@ -64,6 +69,14 @@ export default function Footer() {
                             The premier Minecraft SMP experience. Join thousands of players and
                             build your legacy.
                         </p>
+                        {/* Contact Email */}
+                        <a
+                            href="https://mail.google.com/mail/?view=cm&to=princeprajapti2589@gmail.com"
+                            className="mt-3 inline-flex items-center gap-2 text-xs text-white/30 hover:text-neon-green transition-colors duration-200"
+                        >
+                            <Mail className="h-3.5 w-3.5" />
+                            princeprajapti2589@gmail.com
+                        </a>
                     </div>
 
                     {/* ── Column 2: Quick Links (accordion on mobile) ── */}
