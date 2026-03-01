@@ -121,17 +121,29 @@ export default function ProductsClient({
             return;
         }
 
+        // Limit client side size check to prevent Next.js 413 errors (4MB limit)
+        if (file.size > 4 * 1024 * 1024) {
+            alert("Image is too large. Please choose an image under 4MB.");
+            return;
+        }
+
         setIsUploading(true);
-        const formData = new FormData();
-        formData.append("image", file);
+        try {
+            const formData = new FormData();
+            formData.append("image", file);
 
-        const result = await uploadImageToImgBB(formData);
+            const result = await uploadImageToImgBB(formData);
 
-        setIsUploading(false);
-        if (result.success && result.url) {
-            setForm((prev) => ({ ...prev, image: result.url! }));
-        } else {
-            alert(result.error || "Failed to upload image");
+            if (result.success && result.url) {
+                setForm((prev) => ({ ...prev, image: result.url! }));
+            } else {
+                alert(result.error || "Failed to upload image");
+            }
+        } catch (error: any) {
+            console.error("Upload failed in client:", error);
+            alert("Connection error or file too large. Please try a smaller image.");
+        } finally {
+            setIsUploading(false);
         }
     };
 

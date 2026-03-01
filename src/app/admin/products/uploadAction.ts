@@ -23,14 +23,22 @@ export async function uploadImageToImgBB(formData: FormData) {
             };
         }
 
-        // Prepare formData for ImgBB API
-        const imgbbFormData = new FormData();
-        imgbbFormData.append("image", file);
+        // Convert File to Base64 to safely transmit via Node.js fetch
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const base64Image = buffer.toString("base64");
+
+        // Prepare formData for ImgBB API using URLSearchParams for base64
+        const imgbbFormData = new URLSearchParams();
+        imgbbFormData.append("image", base64Image);
 
         const response = await fetch(
             `https://api.imgbb.com/1/upload?key=${apiKey}`,
             {
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
                 body: imgbbFormData,
             }
         );
