@@ -44,6 +44,7 @@ export async function addProduct(data: ProductData) {
 
         revalidatePath("/admin/products");
         revalidatePath("/admin");
+        revalidatePath("/");
         return { success: true };
     } catch (error) {
         console.error("Add product error:", error);
@@ -69,6 +70,7 @@ export async function updateProduct(mongoId: string, data: ProductData) {
 
         revalidatePath("/admin/products");
         revalidatePath("/admin");
+        revalidatePath("/");
         return { success: true };
     } catch (error) {
         console.error("Update product error:", error);
@@ -88,6 +90,7 @@ export async function deleteProduct(mongoId: string) {
 
         revalidatePath("/admin/products");
         revalidatePath("/admin");
+        revalidatePath("/");
         return { success: true };
     } catch (error) {
         console.error("Delete product error:", error);

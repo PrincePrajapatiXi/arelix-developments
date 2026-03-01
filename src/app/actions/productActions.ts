@@ -9,13 +9,15 @@
 "use server";
 
 import { connectToDatabase } from "@/lib/mongodb";
-import { Product } from "@/lib/data"; // Rely on existing types
+import { Product } from "@/lib/data";
+import { unstable_noStore as noStore } from "next/cache";
 
 /**
  * Fetches all live products from the MongoDB store catalog.
  * It maps the `_id` to a string so it can be safely serialized to the client.
  */
 export async function getLiveStoreProducts(): Promise<Product[]> {
+    noStore(); // 👈 Opt out of Next.js Data Cache for this server action
     try {
         const db = await connectToDatabase();
         const productsCollection = db.collection("products");
