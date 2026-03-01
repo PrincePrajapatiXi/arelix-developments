@@ -19,6 +19,7 @@ import {
     ImageIcon,
 } from "lucide-react";
 import { addProduct, updateProduct, deleteProduct } from "./actions";
+import { uploadImageToImgBB } from "./uploadAction";
 import type { ProductDoc } from "./page";
 
 // ─── Category Options ──────────────────────────────────────────
@@ -56,7 +57,9 @@ export default function ProductsClient({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [form, setForm] = useState(emptyForm);
     const [isPending, startTransition] = useTransition();
+    const [isUploading, setIsUploading] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+    const [dragActive, setDragActive] = useState(false);
 
     // ── Open Add Modal ─────────────────────────────────────────
     const openAdd = () => {
@@ -109,6 +112,54 @@ export default function ProductsClient({
             await deleteProduct(id);
             setDeleteConfirm(null);
         });
+    };
+
+    // ── Handle Image Upload ────────────────────────────────────
+    const handleImageUpload = async (file: File) => {
+        if (!file.type.startsWith("image/")) {
+            alert("Please upload a valid image file.");
+            return;
+        }
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const result = await uploadImageToImgBB(formData);
+
+        setIsUploading(false);
+        if (result.success && result.url) {
+            setForm((prev) => ({ ...prev, image: result.url! }));
+        } else {
+            alert(result.error || "Failed to upload image");
+        }
+    };
+
+    // ── Drag & Drop Events ─────────────────────────────────────
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            await handleImageUpload(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            await handleImageUpload(e.target.files[0]);
+        }
     };
 
     // ── Add / Remove Perk Fields ───────────────────────────────
@@ -378,23 +429,62 @@ export default function ProductsClient({
                                 </div>
                             </div>
 
-                            {/* Image URL */}
+                            {/* Image Dropzone */}
                             <div>
                                 <label className="block text-zinc-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
-                                    Image URL
+                                    Product Image *
                                 </label>
-                                <input
-                                    type="text"
-                                    value={form.image}
-                                    onChange={(e) =>
-                                        setForm({
-                                            ...form,
-                                            image: e.target.value,
-                                        })
-                                    }
-                                    placeholder="/images/product.png"
-                                    className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
-                                />
+                                <div
+                                    onDragEnter={handleDrag}
+                                    onDragLeave={handleDrag}
+                                    onDragOver={handleDrag}
+                                    onDrop={handleDrop}
+                                    className={`relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl transition-all duration-200 ${dragActive
+                                            ? "border-emerald-500 bg-emerald-500/10"
+                                            : form.image
+                                                ? "border-emerald-500/30 bg-emerald-500/5 group"
+                                                : "border-zinc-700/50 hover:border-zinc-600 bg-zinc-800/30 hover:bg-zinc-800/50"
+                                        }`}
+                                >
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        disabled={isUploading}
+                                    />
+
+                                    {isUploading ? (
+                                        <div className="flex flex-col items-center gap-2">
+                                            <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+                                            <p className="text-zinc-400 text-xs font-medium">Uploading image...</p>
+                                        </div>
+                                    ) : form.image ? (
+                                        <div className="relative w-full h-full overflow-hidden rounded-xl">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={form.image}
+                                                alt="Preview"
+                                                className="w-full h-full object-contain"
+                                            />
+                                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <p className="text-white text-sm font-medium flex items-center gap-2">
+                                                    <Pencil className="w-4 h-4" /> Change Image
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-2 text-zinc-500 pointer-events-none">
+                                            <ImageIcon className="w-8 h-8 opacity-70" />
+                                            <p className="text-sm">
+                                                <span className="text-emerald-400 font-medium">Click to upload</span> or drag and drop
+                                            </p>
+                                            <p className="text-xs opacity-70">PNG, JPG, WEBP up to 5MB</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Hidden input to ensure form submission includes standard URL if needed, but we bind state mostly */}
+                                <input type="hidden" value={form.image} required />
                             </div>
 
                             {/* Description */}
