@@ -440,17 +440,17 @@ export default function ProductsClient({
                                     onDragOver={handleDrag}
                                     onDrop={handleDrop}
                                     className={`relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-xl transition-all duration-200 ${dragActive
-                                            ? "border-emerald-500 bg-emerald-500/10"
-                                            : form.image
-                                                ? "border-emerald-500/30 bg-emerald-500/5 group"
-                                                : "border-zinc-700/50 hover:border-zinc-600 bg-zinc-800/30 hover:bg-zinc-800/50"
+                                        ? "border-emerald-500 bg-emerald-500/10"
+                                        : form.image
+                                            ? "border-emerald-500/30 bg-emerald-500/5 group"
+                                            : "border-zinc-700/50 hover:border-zinc-600 bg-zinc-800/30 hover:bg-zinc-800/50"
                                         }`}
                                 >
                                     <input
                                         type="file"
                                         accept="image/*"
                                         onChange={handleFileSelect}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                         disabled={isUploading}
                                     />
 
