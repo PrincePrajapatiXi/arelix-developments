@@ -12,9 +12,9 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextResponse } from "next/server";
-import { products } from "@/lib/data";
 import { sendOrderEmail } from "@/lib/sendOrderEmail";
 import { connectToDatabase } from "@/lib/mongodb";
+import { getLiveStoreProducts } from "@/app/actions/productActions";
 
 // ─── Request Body Types ────────────────────────────────────────
 
@@ -101,7 +101,10 @@ export async function POST(request: Request) {
 
         // ──────────────────────────────────────────────────────
         // 6. Validate each item + recalculate total server-side
+        //    (Fetch live prices from MongoDB)
         // ──────────────────────────────────────────────────────
+        const liveProducts = await getLiveStoreProducts();
+
         const validatedItems = [];
         let serverTotal = 0;
 
@@ -113,7 +116,7 @@ export async function POST(request: Request) {
                 );
             }
 
-            const serverProduct = products.find((p) => p.id === cartItem.id);
+            const serverProduct = liveProducts.find((p) => p.id === cartItem.id);
             if (!serverProduct) {
                 return NextResponse.json(
                     { error: `Product not found: ${cartItem.id}` },

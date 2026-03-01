@@ -13,10 +13,11 @@
 "use client";
 
 // ─── Imports ───────────────────────────────────────────────────
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Package } from "lucide-react";
-import { products, categories, type Category, type Product } from "@/lib/data";
+import { Package, Loader2 } from "lucide-react";
+import { categories, type Category, type Product } from "@/lib/data";
+import { getLiveStoreProducts } from "@/app/actions/productActions";
 import ProductCard from "./ProductCard";
 import ProductDetailModal from "./ProductDetailModal";
 
@@ -48,8 +49,29 @@ const ROW_CLASSES =
 // ═══════════════════════════════════════════════════════════════
 
 export default function ProductGrid({ activeCategory }: ProductGridProps) {
+    // ── Store Data State ──
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     // ── Product Detail Modal state ──
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    // ── Fetch Live Products ──
+    useEffect(() => {
+        async function fetchProducts() {
+            setIsLoading(true);
+            try {
+                const liveProducts = await getLiveStoreProducts();
+                setProducts(liveProducts);
+            } catch (error) {
+                console.error("Failed to load products:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchProducts();
+    }, []);
 
     // ── Group products by category ──
     // Returns an array of { category, label, products } objects.
@@ -76,7 +98,7 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
             label: categoryLabels[activeCategory] || activeCategory,
             items: filtered,
         }];
-    }, [activeCategory]);
+    }, [activeCategory, products]);
 
     // Total item count for header
     const totalItems = groupedProducts.reduce((sum, g) => sum + g.items.length, 0);
@@ -109,44 +131,52 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
             </motion.div>
 
             {/* ── Categorized Product Rows ── */}
-            <div className="space-y-10">
-                {groupedProducts.map((group) => (
-                    <div key={group.key}>
-                        {/* Category heading (only when showing "All") */}
-                        {activeCategory === "all" && (
-                            <motion.h3
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4 }}
-                                className="mb-4 font-[family-name:var(--font-display)] text-lg md:text-xl font-bold text-white/90 tracking-wide"
-                            >
-                                {group.label}
-                                <span className="ml-2 text-xs font-normal text-white/25">
-                                    {group.items.length} items
-                                </span>
-                            </motion.h3>
-                        )}
+            {isLoading ? (
+                // Loading Skeleton View
+                <div className="flex flex-col items-center justify-center py-32 text-center">
+                    <Loader2 className="h-10 w-10 text-emerald-500 animate-spin mb-4" />
+                    <p className="text-white/40 text-sm font-medium tracking-wide">Loading store catalog...</p>
+                </div>
+            ) : (
+                <div className="space-y-10">
+                    {groupedProducts.map((group) => (
+                        <div key={group.key}>
+                            {/* Category heading (only when showing "All") */}
+                            {activeCategory === "all" && (
+                                <motion.h3
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.4 }}
+                                    className="mb-4 font-[family-name:var(--font-display)] text-lg md:text-xl font-bold text-white/90 tracking-wide"
+                                >
+                                    {group.label}
+                                    <span className="ml-2 text-xs font-normal text-white/25">
+                                        {group.items.length} items
+                                    </span>
+                                </motion.h3>
+                            )}
 
-                        {/* Horizontal scroll row (mobile) / Grid (desktop) */}
-                        <div className={ROW_CLASSES}>
-                            <AnimatePresence mode="popLayout">
-                                {group.items.map((product, i) => (
-                                    <ProductCard
-                                        key={product.id}
-                                        product={product}
-                                        index={i}
-                                        onCardClick={() => setSelectedProduct(product)}
-                                    />
-                                ))}
-                            </AnimatePresence>
+                            {/* Horizontal scroll row (mobile) / Grid (desktop) */}
+                            <div className={ROW_CLASSES}>
+                                <AnimatePresence mode="popLayout">
+                                    {group.items.map((product, i) => (
+                                        <ProductCard
+                                            key={product.id}
+                                            product={product}
+                                            index={i}
+                                            onCardClick={() => setSelectedProduct(product)}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* ── Empty State ── */}
-            {totalItems === 0 && (
+            {!isLoading && totalItems === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                     <Package className="h-12 w-12 text-white/10 mb-4" />
                     <p className="text-white/30 text-sm">No items found in this category.</p>
