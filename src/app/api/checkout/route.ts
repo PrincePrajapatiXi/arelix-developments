@@ -14,6 +14,7 @@
 import { NextResponse } from "next/server";
 import { products } from "@/lib/data";
 import { sendOrderEmail } from "@/lib/sendOrderEmail";
+import { connectToDatabase } from "@/lib/mongodb";
 
 // ─── Request Body Types ────────────────────────────────────────
 
@@ -174,22 +175,26 @@ export async function POST(request: Request) {
         }
 
         // ──────────────────────────────────────────────────────
-        // 🔌 DATABASE HOOK — Save order to your database here
+        // 🔌 DATABASE — Save order to MongoDB
         // ──────────────────────────────────────────────────────
-        //
-        // MONGODB EXAMPLE:
-        //   await db.collection('orders').insertOne({
-        //     orderId,
-        //     minecraftUsername: username,
-        //     edition,
-        //     utrNumber,
-        //     items: validatedItems,
-        //     total: totalAmount,
-        //     status: 'pending_verification',
-        //     createdAt: new Date(),
-        //   });
-        //
-        // ──────────────────────────────────────────────────────
+        try {
+            const db = await connectToDatabase();
+            await db.collection("orders").insertOne({
+                orderId,
+                minecraftUsername: username,
+                edition,
+                utrNumber,
+                items: validatedItems,
+                total: totalAmount,
+                status: "pending",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            console.log("✅ Order saved to MongoDB!");
+        } catch (dbErr) {
+            console.error("❌ MongoDB save failed:", dbErr);
+            // Don't fail the order — email was already sent
+        }
 
         // ──────────────────────────────────────────────────────
         // 9. Return order confirmation
