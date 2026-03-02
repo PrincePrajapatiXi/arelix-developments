@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // ═══════════════════════════════════════════════════════════════
 // FILE: ProductCard.tsx
 // PURPOSE: A single product card displayed in the store grid.

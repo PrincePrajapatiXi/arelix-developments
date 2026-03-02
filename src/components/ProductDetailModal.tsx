@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // ═══════════════════════════════════════════════════════════════
 // FILE: ProductDetailModal.tsx
 // PURPOSE: Full-screen modal overlay showing a product's complete

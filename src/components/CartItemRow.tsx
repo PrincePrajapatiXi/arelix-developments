@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // ═══════════════════════════════════════════════════════════════
 // FILE: CartItemRow.tsx
 // PURPOSE: A single row inside the CartSidebar representing one

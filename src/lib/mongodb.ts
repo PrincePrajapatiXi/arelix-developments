@@ -19,7 +19,6 @@ interface MongoCache {
 }
 
 declare global {
-    // eslint-disable-next-line no-var
     var _mongoCache: MongoCache | undefined;
 }
 
