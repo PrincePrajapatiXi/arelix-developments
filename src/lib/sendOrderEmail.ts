@@ -28,13 +28,20 @@ interface OrderEmailData {
 
 // ─── Gmail SMTP Transport ──────────────────────────────────────
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-    },
-});
+let transporter: nodemailer.Transporter | null = null;
+
+function getTransporter() {
+    if (!transporter) {
+        transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASSWORD,
+            },
+        });
+    }
+    return transporter;
+}
 
 // ─── Send Order Notification ───────────────────────────────────
 
@@ -121,5 +128,6 @@ export async function sendOrderEmail(order: OrderEmailData) {
         html,
     };
 
-    await transporter.sendMail(mailOptions);
+    const mailTransporter = getTransporter();
+    await mailTransporter.sendMail(mailOptions);
 }
