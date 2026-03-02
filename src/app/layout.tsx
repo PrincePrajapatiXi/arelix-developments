@@ -10,6 +10,9 @@ import type { Metadata } from "next";
 import { Inter, Orbitron } from "next/font/google";
 import "./globals.css";
 
+// Force dynamic rendering globally to prevent Vercel static build timeouts
+export const dynamic = "force-dynamic";
+
 // ─── Font Configuration ────────────────────────────────────────
 // Next.js automatically generates CSS @font-face declarations and
 // assigns each font to a CSS variable for use in Tailwind/CSS.
