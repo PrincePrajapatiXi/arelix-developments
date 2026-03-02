@@ -139,7 +139,6 @@ export default function ProductCard({ product, index, onCardClick }: ProductCard
                         <img
                             src={product.image}
                             alt={product.name}
-                            fetchPriority="high"
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"
                         />
                     ) : (
