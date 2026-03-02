@@ -477,6 +477,7 @@ export default function ProductsClient({
                                             <img
                                                 src={form.image}
                                                 alt="Preview"
+                                                fetchPriority="high"
                                                 className="w-full h-full object-contain"
                                             />
                                             <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

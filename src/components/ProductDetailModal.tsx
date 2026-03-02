@@ -107,6 +107,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                                     <img
                                         src={product.image}
                                         alt={product.name}
+                                        fetchPriority="high"
                                         className="w-full h-full object-cover opacity-90"
                                     />
                                 ) : (
