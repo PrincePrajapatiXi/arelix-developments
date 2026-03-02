@@ -139,7 +139,7 @@ export default function ProductsClient({
             } else {
                 alert(result.error || "Failed to upload image");
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error("Upload failed in client:", error);
             alert("Connection error or file too large. Please try a smaller image.");
         } finally {
