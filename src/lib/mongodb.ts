@@ -8,11 +8,8 @@
 
 import { MongoClient, Db } from "mongodb";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-    throw new Error("Please define MONGODB_URI in your .env.local file");
-}
+// The URI and error check are moved inside connectToDatabase()
+// to prevent crashing the Vercel build during static file evaluation.
 
 // ─── Global Cache (Dev Hot Reload Safe) ────────────────────────
 
@@ -34,6 +31,12 @@ if (!global._mongoCache) {
 // ─── Connect Function ──────────────────────────────────────────
 
 export async function connectToDatabase(): Promise<Db> {
+    const MONGODB_URI = process.env.MONGODB_URI!;
+
+    if (!MONGODB_URI) {
+        throw new Error("Please define MONGODB_URI in your .env.local file");
+    }
+
     if (cached.client) {
         return cached.client.db();
     }
