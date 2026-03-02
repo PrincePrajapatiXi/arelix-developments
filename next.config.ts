@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Trigger redeployment on Vercel
 
 const nextConfig: NextConfig = {
   experimental: {
