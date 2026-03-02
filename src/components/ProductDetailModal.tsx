@@ -100,11 +100,19 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                                 </div>
                             )}
 
-                            {/* Large emoji */}
+                            {/* Product Image or fallback emoji */}
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-7xl md:text-8xl opacity-50">
-                                    {categoryEmoji[product.category] || "✨"}
-                                </span>
+                                {product.image ? (
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover opacity-90"
+                                    />
+                                ) : (
+                                    <span className="text-7xl md:text-8xl opacity-50">
+                                        {categoryEmoji[product.category] || "✨"}
+                                    </span>
+                                )}
                             </div>
 
                             {/* Bottom gradient */}

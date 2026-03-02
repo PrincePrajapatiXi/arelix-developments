@@ -132,14 +132,22 @@ export default function ProductCard({ product, index, onCardClick }: ProductCard
                     }}
                 />
 
-                {/* Category emoji: visual placeholder for product images */}
+                {/* Product image or fallback category emoji */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-3xl md:text-6xl opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-500">
-                        {product.category === "ranks" && "⚔️"}
-                        {product.category === "kits" && "🎒"}
-                        {product.category === "keys" && "🔑"}
-                        {product.category === "misc" && "✨"}
-                    </div>
+                    {product.image ? (
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"
+                        />
+                    ) : (
+                        <div className="text-3xl md:text-6xl opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-500">
+                            {product.category === "ranks" && "⚔️"}
+                            {product.category === "kits" && "🎒"}
+                            {product.category === "keys" && "🔑"}
+                            {product.category === "misc" && "✨"}
+                        </div>
+                    )}
                 </div>
 
                 {/* Star indicator for popular products (top-left) */}

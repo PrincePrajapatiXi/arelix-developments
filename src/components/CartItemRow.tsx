@@ -36,9 +36,17 @@ export default function CartItemRow({ item }: { item: CartItem }) {
 
     return (
         <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-surface-secondary/40 p-3 transition-all duration-200 hover:border-white/10">
-            {/* ── Category Emoji Avatar ── */}
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-tertiary/60 text-xl">
-                {categoryEmoji[item.category] || "📦"}
+            {/* ── Category Emoji Avatar or Product Image ── */}
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-tertiary/60 text-xl overflow-hidden">
+                {item.image ? (
+                    <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover opacity-90"
+                    />
+                ) : (
+                    categoryEmoji[item.category] || "📦"
+                )}
             </div>
 
             {/* ── Item Info ── */}
