@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: OrderTableClient.tsx
 // PURPOSE: Client-side interactive table for orders with
-//          filter tabs, approve/reject buttons, and loading states.
+//          search, filter tabs, approve/reject buttons.
 // LOCATION: src/app/admin/orders/OrderTableClient.tsx
 // ═══════════════════════════════════════════════════════════════
 
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import {
     CheckCircle2,
     XCircle,
@@ -17,6 +17,7 @@ import {
     User,
     CreditCard,
     Calendar,
+    Search,
 } from "lucide-react";
 import { approveOrder, rejectOrder } from "./actions";
 import type { Order } from "./page";
@@ -38,13 +39,28 @@ const filterTabs: { key: FilterTab; label: string }[] = [
 
 export default function OrderTableClient({ orders }: { orders: Order[] }) {
     const [filter, setFilter] = useState<FilterTab>("all");
+    const [searchQuery, setSearchQuery] = useState("");
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
 
-    const filteredOrders =
-        filter === "all"
+    // Combined filter: status tab + search query
+    const filteredOrders = useMemo(() => {
+        let result = filter === "all"
             ? orders
             : orders.filter((o) => o.status === filter);
+
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            result = result.filter(
+                (o) =>
+                    o.orderId.toLowerCase().includes(q) ||
+                    o.minecraftUsername.toLowerCase().includes(q) ||
+                    o.utrNumber.toLowerCase().includes(q)
+            );
+        }
+
+        return result;
+    }, [orders, filter, searchQuery]);
 
     // ── Handle Approve ─────────────────────────────────────────
     const handleApprove = (id: string) => {
@@ -93,38 +109,70 @@ export default function OrderTableClient({ orders }: { orders: Order[] }) {
 
     return (
         <div>
-            {/* ── Filter Tabs ── */}
-            <div className="flex items-center gap-2 mb-6 flex-wrap">
-                <Filter className="w-4 h-4 text-zinc-500" />
-                {filterTabs.map((tab) => {
-                    const count =
-                        tab.key === "all"
-                            ? orders.length
-                            : orders.filter((o) => o.status === tab.key).length;
-                    return (
+            {/* ── Search + Filter Row ── */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+                {/* Search Bar */}
+                <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <input
+                        type="text"
+                        placeholder="Search by Order ID, Username, or UTR..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                    />
+                    {searchQuery && (
                         <button
-                            key={tab.key}
-                            onClick={() => setFilter(tab.key)}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${filter === tab.key
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                        >
+                            <XCircle className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-2 flex-wrap">
+                    <Filter className="w-4 h-4 text-zinc-500" />
+                    {filterTabs.map((tab) => {
+                        const count =
+                            tab.key === "all"
+                                ? orders.length
+                                : orders.filter((o) => o.status === tab.key).length;
+                        return (
+                            <button
+                                key={tab.key}
+                                onClick={() => setFilter(tab.key)}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${filter === tab.key
                                     ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                                     : "bg-zinc-800/50 text-zinc-400 border border-zinc-700/50 hover:text-white hover:bg-zinc-800"
-                                }`}
-                        >
-                            {tab.label}
-                            <span className="ml-1.5 text-xs opacity-60">
-                                ({count})
-                            </span>
-                        </button>
-                    );
-                })}
+                                    }`}
+                            >
+                                {tab.label}
+                                <span className="ml-1.5 text-xs opacity-60">
+                                    ({count})
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
+
+            {/* ── Results Count ── */}
+            {searchQuery && (
+                <p className="text-zinc-500 text-xs mb-4">
+                    Found {filteredOrders.length} result{filteredOrders.length !== 1 ? "s" : ""} for &ldquo;{searchQuery}&rdquo;
+                </p>
+            )}
 
             {/* ── Orders Table / Cards ── */}
             {filteredOrders.length === 0 ? (
                 <div className="text-center py-16 bg-zinc-900/50 border border-zinc-800/50 rounded-2xl">
                     <ShoppingCartEmpty />
                     <p className="text-zinc-500 text-sm mt-2">
-                        No orders found for this filter.
+                        {searchQuery
+                            ? "No orders match your search."
+                            : "No orders found for this filter."}
                     </p>
                 </div>
             ) : (
@@ -133,8 +181,8 @@ export default function OrderTableClient({ orders }: { orders: Order[] }) {
                         <div
                             key={order._id}
                             className={`bg-zinc-900/70 border rounded-2xl p-4 md:p-5 transition-all duration-200 hover:bg-zinc-900 ${order.status === "pending"
-                                    ? "border-amber-500/20"
-                                    : "border-zinc-800/50"
+                                ? "border-amber-500/20"
+                                : "border-zinc-800/50"
                                 }`}
                         >
                             {/* Top Row: Order ID + Status + Date */}

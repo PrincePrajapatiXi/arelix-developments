@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 // ═══════════════════════════════════════════════════════════════
 // FILE: ProductDetailModal.tsx
 // PURPOSE: Full-screen modal overlay showing a product's complete
@@ -9,7 +8,8 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingCart, Check, Star } from "lucide-react";
 import { type Product } from "@/lib/data";
@@ -104,10 +104,13 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                             {/* Product Image or fallback emoji */}
                             <div className="absolute inset-0 flex items-center justify-center">
                                 {product.image ? (
-                                    <img
+                                    <Image
                                         src={product.image}
                                         alt={product.name}
-                                        className="w-full h-full object-cover opacity-90"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        priority
+                                        className="object-cover opacity-90"
                                     />
                                 ) : (
                                     <span className="text-7xl md:text-8xl opacity-50">

@@ -11,7 +11,7 @@
 "use client"; // Required for useState and event handlers
 
 // ─── Imports ───────────────────────────────────────────────────
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion"; // For tab indicator + mobile menu animations
 import { Menu, X, ShoppingCart, Sword } from "lucide-react"; // Icons
 import { categories, type Category } from "@/lib/data";       // Category list + type
@@ -39,7 +39,14 @@ export default function Navbar({ activeCategory, onCategoryChange }: NavbarProps
 
     // ── Cart Store Integration ──
     const toggleCart = useCartStore((s) => s.toggleCart); // Open/close sidebar
-    const itemCount = useCartStore((s) => s.getItemCount()); // Live badge count
+    const storeItemCount = useCartStore((s) => s.getItemCount()); // Live badge count
+
+    // Defer cart count to client-side to prevent hydration mismatch
+    // (server renders 0, localStorage loads items on client)
+    const [itemCount, setItemCount] = useState(0);
+    useEffect(() => {
+        setItemCount(storeItemCount);
+    }, [storeItemCount]);
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-surface-primary/80 backdrop-blur-xl">

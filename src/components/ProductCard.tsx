@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 // ═══════════════════════════════════════════════════════════════
 // FILE: ProductCard.tsx
 // PURPOSE: A single product card displayed in the store grid.
@@ -13,6 +12,7 @@
 
 // ─── Imports ───────────────────────────────────────────────────
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";                        // For entrance + hover animations
 import { ShoppingCart, Check, Star } from "lucide-react";      // Icons
 import { type Product } from "@/lib/data";                     // Product type definition
@@ -136,10 +136,13 @@ export default function ProductCard({ product, index, onCardClick }: ProductCard
                 {/* Product image or fallback category emoji */}
                 <div className="absolute inset-0 flex items-center justify-center">
                     {product.image ? (
-                        <img
+                        <Image
                             src={product.image}
                             alt={product.name}
-                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"
+                            fill
+                            sizes="(max-width: 768px) 150px, 300px"
+                            priority
+                            className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"
                         />
                     ) : (
                         <div className="text-3xl md:text-6xl opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-500">

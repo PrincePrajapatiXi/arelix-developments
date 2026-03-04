@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
-// FILE: page.tsx  (Admin Dashboard)
-// PURPOSE: Main dashboard page showing key stats:
-//          Total Revenue, Total Orders, Pending Orders, Products
+// FILE: page.tsx  (Admin Dashboard — Enhanced)
+// PURPOSE: Rich dashboard with stats, 7-day revenue chart,
+//          recent orders, and top-selling products.
 // LOCATION: src/app/admin/page.tsx
 // ═══════════════════════════════════════════════════════════════
 
@@ -12,56 +12,210 @@ import {
     Package,
     TrendingUp,
     ArrowUpRight,
+    CalendarDays,
+    Users,
+    CheckCircle2,
+    XCircle,
+    BarChart3,
 } from "lucide-react";
 import { connectToDatabase } from "@/lib/mongodb";
+import DashboardClient from "./DashboardClient";
 
 // ─── Data Fetcher ──────────────────────────────────────────────
 
-async function getDashboardStats() {
+async function getDashboardData() {
     try {
         const db = await connectToDatabase();
+        const ordersCol = db.collection("orders");
+        const productsCol = db.collection("products");
 
-        const ordersCollection = db.collection("orders");
-        const productsCollection = db.collection("products");
+        // Today boundaries (IST approximation — UTC+5:30)
+        const now = new Date();
+        const todayStart = new Date(now);
+        todayStart.setHours(0, 0, 0, 0);
+        const todayEnd = new Date(now);
+        todayEnd.setHours(23, 59, 59, 999);
+
+        // Last 7 days boundaries
+        const sevenDaysAgo = new Date(now);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
 
         // Run all queries in parallel
         const [
             totalOrders,
             pendingOrders,
             successOrders,
+            rejectedOrders,
             totalProducts,
             revenueResult,
+            todayOrdersCount,
+            todayRevenueResult,
+            uniqueCustomersResult,
+            recentOrders,
+            dailyRevenueResult,
+            topProductsResult,
         ] = await Promise.all([
-            ordersCollection.countDocuments(),
-            ordersCollection.countDocuments({ status: "pending" }),
-            ordersCollection.countDocuments({ status: "success" }),
-            productsCollection.countDocuments(),
-            ordersCollection
+            ordersCol.countDocuments(),
+            ordersCol.countDocuments({ status: "pending" }),
+            ordersCol.countDocuments({ status: "success" }),
+            ordersCol.countDocuments({ status: "rejected" }),
+            productsCol.countDocuments(),
+            ordersCol
                 .aggregate([
                     { $match: { status: "success" } },
                     { $group: { _id: null, total: { $sum: "$total" } } },
+                ])
+                .toArray(),
+            // Today's orders
+            ordersCol.countDocuments({
+                createdAt: { $gte: todayStart, $lte: todayEnd },
+            }),
+            // Today's revenue
+            ordersCol
+                .aggregate([
+                    {
+                        $match: {
+                            status: "success",
+                            createdAt: { $gte: todayStart, $lte: todayEnd },
+                        },
+                    },
+                    { $group: { _id: null, total: { $sum: "$total" } } },
+                ])
+                .toArray(),
+            // Unique customers
+            ordersCol
+                .aggregate([
+                    {
+                        $group: { _id: "$minecraftUsername" },
+                    },
+                    { $count: "total" },
+                ])
+                .toArray(),
+            // Recent 5 orders
+            ordersCol
+                .find({})
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .toArray()
+                .then((orders) =>
+                    orders.map((o) => ({
+                        _id: o._id.toString(),
+                        orderId: o.orderId,
+                        minecraftUsername: o.minecraftUsername,
+                        total: o.total,
+                        status: o.status,
+                        createdAt: o.createdAt
+                            ? new Date(o.createdAt).toISOString()
+                            : new Date().toISOString(),
+                    }))
+                ),
+            // Daily revenue for last 7 days
+            ordersCol
+                .aggregate([
+                    {
+                        $match: {
+                            status: "success",
+                            createdAt: { $gte: sevenDaysAgo },
+                        },
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                $dateToString: {
+                                    format: "%Y-%m-%d",
+                                    date: { $toDate: "$createdAt" },
+                                },
+                            },
+                            total: { $sum: "$total" },
+                            count: { $sum: 1 },
+                        },
+                    },
+                    { $sort: { _id: 1 } },
+                ])
+                .toArray(),
+            // Top selling products
+            ordersCol
+                .aggregate([
+                    { $match: { status: "success" } },
+                    { $unwind: "$items" },
+                    {
+                        $group: {
+                            _id: "$items.name",
+                            totalQty: { $sum: "$items.quantity" },
+                            totalRevenue: { $sum: "$items.lineTotal" },
+                        },
+                    },
+                    { $sort: { totalRevenue: -1 } },
+                    { $limit: 5 },
                 ])
                 .toArray(),
         ]);
 
         const totalRevenue =
             revenueResult.length > 0 ? revenueResult[0].total : 0;
+        const todayRevenue =
+            todayRevenueResult.length > 0 ? todayRevenueResult[0].total : 0;
+        const uniqueCustomers =
+            uniqueCustomersResult.length > 0
+                ? uniqueCustomersResult[0].total
+                : 0;
+
+        // Fill in missing days for the 7-day chart
+        const dailyRevenueMap: Record<string, { total: number; count: number }> = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dailyRevenueResult.forEach((d: any) => {
+            dailyRevenueMap[d._id] = { total: d.total, count: d.count };
+        });
+
+        const chartData: { date: string; label: string; revenue: number; orders: number }[] = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().split("T")[0];
+            const dayLabel = d.toLocaleDateString("en-IN", { weekday: "short" });
+            const entry = dailyRevenueMap[key];
+            chartData.push({
+                date: key,
+                label: dayLabel,
+                revenue: entry ? entry.total : 0,
+                orders: entry ? entry.count : 0,
+            });
+        }
 
         return {
             totalRevenue,
             totalOrders,
             pendingOrders,
             successOrders,
+            rejectedOrders,
             totalProducts,
+            todayOrders: todayOrdersCount,
+            todayRevenue,
+            uniqueCustomers,
+            recentOrders,
+            chartData,
+            topProducts: topProductsResult as {
+                _id: string;
+                totalQty: number;
+                totalRevenue: number;
+            }[],
         };
     } catch (error) {
-        console.error("Dashboard stats error:", error);
+        console.error("Dashboard data error:", error);
         return {
             totalRevenue: 0,
             totalOrders: 0,
             pendingOrders: 0,
             successOrders: 0,
+            rejectedOrders: 0,
             totalProducts: 0,
+            todayOrders: 0,
+            todayRevenue: 0,
+            uniqueCustomers: 0,
+            recentOrders: [],
+            chartData: [],
+            topProducts: [],
         };
     }
 }
@@ -73,15 +227,22 @@ async function getDashboardStats() {
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-    const stats = await getDashboardStats();
+    const data = await getDashboardData();
 
-    const cards = [
+    // Determine greeting based on hour
+    const hour = new Date().getHours();
+    let greeting = "Good Evening";
+    if (hour < 12) greeting = "Good Morning";
+    else if (hour < 17) greeting = "Good Afternoon";
+
+    const statCards = [
         {
             title: "Total Revenue",
-            value: `₹${stats.totalRevenue.toFixed(2)}`,
+            value: data.totalRevenue,
+            prefix: "₹",
+            decimals: 2,
             subtitle: "From approved orders",
-            icon: DollarSign,
-            color: "emerald",
+            icon: "DollarSign",
             bgGradient: "from-emerald-500/10 to-emerald-600/5",
             borderColor: "border-emerald-500/20",
             iconBg: "bg-emerald-500/15",
@@ -89,11 +250,25 @@ export default async function AdminDashboardPage() {
             textColor: "text-emerald-400",
         },
         {
+            title: "Today's Revenue",
+            value: data.todayRevenue,
+            prefix: "₹",
+            decimals: 2,
+            subtitle: "Earned today",
+            icon: "CalendarDays",
+            bgGradient: "from-cyan-500/10 to-cyan-600/5",
+            borderColor: "border-cyan-500/20",
+            iconBg: "bg-cyan-500/15",
+            iconColor: "text-cyan-400",
+            textColor: "text-cyan-400",
+        },
+        {
             title: "Total Orders",
-            value: stats.totalOrders.toString(),
-            subtitle: `${stats.successOrders} completed`,
-            icon: ShoppingCart,
-            color: "blue",
+            value: data.totalOrders,
+            prefix: "",
+            decimals: 0,
+            subtitle: `${data.successOrders} completed`,
+            icon: "ShoppingCart",
             bgGradient: "from-blue-500/10 to-blue-600/5",
             borderColor: "border-blue-500/20",
             iconBg: "bg-blue-500/15",
@@ -102,10 +277,11 @@ export default async function AdminDashboardPage() {
         },
         {
             title: "Pending Orders",
-            value: stats.pendingOrders.toString(),
+            value: data.pendingOrders,
+            prefix: "",
+            decimals: 0,
             subtitle: "Awaiting verification",
-            icon: Clock,
-            color: "amber",
+            icon: "Clock",
             bgGradient: "from-amber-500/10 to-amber-600/5",
             borderColor: "border-amber-500/20",
             iconBg: "bg-amber-500/15",
@@ -114,109 +290,40 @@ export default async function AdminDashboardPage() {
         },
         {
             title: "Total Products",
-            value: stats.totalProducts.toString(),
+            value: data.totalProducts,
+            prefix: "",
+            decimals: 0,
             subtitle: "In the store catalog",
-            icon: Package,
-            color: "purple",
+            icon: "Package",
             bgGradient: "from-purple-500/10 to-purple-600/5",
             borderColor: "border-purple-500/20",
             iconBg: "bg-purple-500/15",
             iconColor: "text-purple-400",
             textColor: "text-purple-400",
         },
+        {
+            title: "Unique Customers",
+            value: data.uniqueCustomers,
+            prefix: "",
+            decimals: 0,
+            subtitle: "Players who ordered",
+            icon: "Users",
+            bgGradient: "from-pink-500/10 to-pink-600/5",
+            borderColor: "border-pink-500/20",
+            iconBg: "bg-pink-500/15",
+            iconColor: "text-pink-400",
+            textColor: "text-pink-400",
+        },
     ];
 
     return (
-        <div>
-            {/* ── Page Header ── */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                    <TrendingUp className="w-6 h-6 text-emerald-400" />
-                    <h1 className="text-2xl md:text-3xl font-bold text-white">
-                        Dashboard
-                    </h1>
-                </div>
-                <p className="text-zinc-500 text-sm">
-                    Overview of your store performance
-                </p>
-            </div>
-
-            {/* ── Stats Grid ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
-                {cards.map((card) => (
-                    <div
-                        key={card.title}
-                        className={`
-                            relative overflow-hidden rounded-2xl
-                            bg-gradient-to-br ${card.bgGradient}
-                            border ${card.borderColor}
-                            p-6 transition-all duration-300
-                            hover:scale-[1.02] hover:shadow-xl
-                        `}
-                    >
-                        {/* Card Header */}
-                        <div className="flex items-start justify-between mb-4">
-                            <div
-                                className={`w-11 h-11 rounded-xl ${card.iconBg} flex items-center justify-center`}
-                            >
-                                <card.icon
-                                    className={`w-5 h-5 ${card.iconColor}`}
-                                />
-                            </div>
-                            <ArrowUpRight className="w-4 h-4 text-zinc-600" />
-                        </div>
-
-                        {/* Card Value */}
-                        <p className={`text-3xl font-bold ${card.textColor} mb-1`}>
-                            {card.value}
-                        </p>
-
-                        {/* Card Title & Subtitle */}
-                        <p className="text-zinc-300 text-sm font-medium">
-                            {card.title}
-                        </p>
-                        <p className="text-zinc-600 text-xs mt-0.5">
-                            {card.subtitle}
-                        </p>
-
-                        {/* Background Decoration */}
-                        <div
-                            className={`absolute -bottom-4 -right-4 w-24 h-24 ${card.iconBg} rounded-full blur-2xl opacity-40`}
-                        />
-                    </div>
-                ))}
-            </div>
-
-            {/* ── Quick Info ── */}
-            <div className="mt-8 bg-zinc-900/50 border border-zinc-800/50 rounded-2xl p-6">
-                <h2 className="text-white font-semibold text-lg mb-2">
-                    Quick Actions
-                </h2>
-                <p className="text-zinc-500 text-sm mb-4">
-                    Manage your store from the sidebar navigation.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                    <a
-                        href="/admin/orders"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl text-sm font-medium hover:bg-amber-500/20 transition-all"
-                    >
-                        <Clock className="w-4 h-4" />
-                        Review Pending Orders
-                        {stats.pendingOrders > 0 && (
-                            <span className="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded-full">
-                                {stats.pendingOrders}
-                            </span>
-                        )}
-                    </a>
-                    <a
-                        href="/admin/products"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-xl text-sm font-medium hover:bg-purple-500/20 transition-all"
-                    >
-                        <Package className="w-4 h-4" />
-                        Manage Products
-                    </a>
-                </div>
-            </div>
-        </div>
+        <DashboardClient
+            greeting={greeting}
+            statCards={statCards}
+            chartData={data.chartData}
+            recentOrders={data.recentOrders}
+            topProducts={data.topProducts}
+            pendingOrders={data.pendingOrders}
+        />
     );
 }

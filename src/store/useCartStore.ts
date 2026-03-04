@@ -3,12 +3,14 @@
 // PURPOSE: Global cart state management using Zustand.
 //          Provides actions to add/remove/update cart items,
 //          toggle the cart sidebar, and compute totals.
+//          Uses persist middleware to save cart to localStorage.
 //          Any component can import `useCartStore` to read or
 //          modify the cart without prop drilling.
 // LOCATION: src/store/useCartStore.ts
 // ═══════════════════════════════════════════════════════════════
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { type Product } from "@/lib/data";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -51,99 +53,107 @@ interface CartState {
 
 let toastIdCounter = 0; // Simple auto-incrementing ID for toasts
 
-export const useCartStore = create<CartState>((set, get) => ({
-    // ── Initial State ──
-    items: [],
-    isCartOpen: false,
-    toasts: [],
+export const useCartStore = create<CartState>()(
+    persist(
+        (set, get) => ({
+            // ── Initial State ──
+            items: [],
+            isCartOpen: false,
+            toasts: [],
 
-    // ── addToCart ──
-    // If the product is already in the cart, increment its quantity.
-    // Otherwise, add it as a new item with quantity = 1.
-    addToCart: (product: Product) => {
-        set((state) => {
-            const existingItem = state.items.find((item) => item.id === product.id);
+            // ── addToCart ──
+            // If the product is already in the cart, increment its quantity.
+            // Otherwise, add it as a new item with quantity = 1.
+            addToCart: (product: Product) => {
+                set((state) => {
+                    const existingItem = state.items.find((item) => item.id === product.id);
 
-            if (existingItem) {
-                // Product already in cart → bump quantity by 1
-                return {
-                    items: state.items.map((item) =>
-                        item.id === product.id
-                            ? { ...item, quantity: item.quantity + 1 }
-                            : item
-                    ),
-                };
-            }
+                    if (existingItem) {
+                        // Product already in cart → bump quantity by 1
+                        return {
+                            items: state.items.map((item) =>
+                                item.id === product.id
+                                    ? { ...item, quantity: item.quantity + 1 }
+                                    : item
+                            ),
+                        };
+                    }
 
-            // New product → add to cart with quantity 1
-            return { items: [...state.items, { ...product, quantity: 1 }] };
-        });
+                    // New product → add to cart with quantity 1
+                    return { items: [...state.items, { ...product, quantity: 1 }] };
+                });
 
-        // Show a toast notification
-        get().addToast(`${product.name} added to cart!`);
-    },
+                // Show a toast notification
+                get().addToast(`${product.name} added to cart!`);
+            },
 
-    // ── removeFromCart ──
-    // Removes an item completely from the cart (regardless of quantity).
-    removeFromCart: (productId: string) => {
-        set((state) => ({
-            items: state.items.filter((item) => item.id !== productId),
-        }));
-    },
+            // ── removeFromCart ──
+            // Removes an item completely from the cart (regardless of quantity).
+            removeFromCart: (productId: string) => {
+                set((state) => ({
+                    items: state.items.filter((item) => item.id !== productId),
+                }));
+            },
 
-    // ── updateQuantity ──
-    // Sets the quantity of a specific item. If quantity becomes 0 or less,
-    // the item is removed entirely.
-    updateQuantity: (productId: string, quantity: number) => {
-        set((state) => {
-            if (quantity <= 0) {
-                return { items: state.items.filter((item) => item.id !== productId) };
-            }
-            return {
-                items: state.items.map((item) =>
-                    item.id === productId ? { ...item, quantity } : item
-                ),
-            };
-        });
-    },
+            // ── updateQuantity ──
+            // Sets the quantity of a specific item. If quantity becomes 0 or less,
+            // the item is removed entirely.
+            updateQuantity: (productId: string, quantity: number) => {
+                set((state) => {
+                    if (quantity <= 0) {
+                        return { items: state.items.filter((item) => item.id !== productId) };
+                    }
+                    return {
+                        items: state.items.map((item) =>
+                            item.id === productId ? { ...item, quantity } : item
+                        ),
+                    };
+                });
+            },
 
-    // ── clearCart ──
-    // Empties the entire cart (used after successful checkout).
-    clearCart: () => set({ items: [] }),
+            // ── clearCart ──
+            // Empties the entire cart (used after successful checkout).
+            clearCart: () => set({ items: [] }),
 
-    // ── Sidebar Controls ──
-    toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
-    openCart: () => set({ isCartOpen: true }),
-    closeCart: () => set({ isCartOpen: false }),
+            // ── Sidebar Controls ──
+            toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
+            openCart: () => set({ isCartOpen: true }),
+            closeCart: () => set({ isCartOpen: false }),
 
-    // ── Toast Notifications ──
-    addToast: (message: string) => {
-        const id = ++toastIdCounter;
-        set((state) => ({
-            toasts: [...state.toasts, { id, message }],
-        }));
-        // Auto-remove after 2.5 seconds
-        setTimeout(() => get().removeToast(id), 2500);
-    },
+            // ── Toast Notifications ──
+            addToast: (message: string) => {
+                const id = ++toastIdCounter;
+                set((state) => ({
+                    toasts: [...state.toasts, { id, message }],
+                }));
+                // Auto-remove after 2.5 seconds
+                setTimeout(() => get().removeToast(id), 2500);
+            },
 
-    removeToast: (id: number) => {
-        set((state) => ({
-            toasts: state.toasts.filter((t) => t.id !== id),
-        }));
-    },
+            removeToast: (id: number) => {
+                set((state) => ({
+                    toasts: state.toasts.filter((t) => t.id !== id),
+                }));
+            },
 
-    // ── Computed: Total Price ──
-    // Sums up (price × quantity) for every item in the cart.
-    getTotal: () => {
-        return get().items.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0
-        );
-    },
+            // ── Computed: Total Price ──
+            // Sums up (price × quantity) for every item in the cart.
+            getTotal: () => {
+                return get().items.reduce(
+                    (sum, item) => sum + item.price * item.quantity,
+                    0
+                );
+            },
 
-    // ── Computed: Total Item Count ──
-    // Sums up all quantities (used for the Navbar badge).
-    getItemCount: () => {
-        return get().items.reduce((sum, item) => sum + item.quantity, 0);
-    },
-}));
+            // ── Computed: Total Item Count ──
+            // Sums up all quantities (used for the Navbar badge).
+            getItemCount: () => {
+                return get().items.reduce((sum, item) => sum + item.quantity, 0);
+            },
+        }),
+        {
+            name: "arelix-cart",
+            partialize: (state: CartState) => ({ items: state.items }),
+        }
+    )
+);

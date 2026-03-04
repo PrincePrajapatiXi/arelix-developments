@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { addProduct, updateProduct, deleteProduct } from "./actions";
 import { uploadImageToImgBB } from "./uploadAction";
+import Image from "next/image";
 import type { ProductDoc } from "./page";
 
 // ─── Category Options ──────────────────────────────────────────
@@ -473,11 +474,13 @@ export default function ProductsClient({
                                         </div>
                                     ) : form.image ? (
                                         <div className="relative w-full h-full overflow-hidden rounded-xl">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={form.image}
                                                 alt="Preview"
-                                                className="w-full h-full object-contain"
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 500px"
+                                                priority
+                                                className="object-contain"
                                             />
                                             <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <p className="text-white text-sm font-medium flex items-center gap-2">

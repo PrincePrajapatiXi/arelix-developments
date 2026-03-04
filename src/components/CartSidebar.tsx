@@ -637,24 +637,29 @@ export default function CartSidebar() {
 
                         {/* Cart footer */}
                         {step === "cart" && items.length > 0 && (
-                            <div className="border-t border-white/5 px-6 py-4 space-y-4">
+                            <div className="border-t border-white/5 px-6 py-4 space-y-3">
+                                {/* Total */}
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm text-white/50">Subtotal</span>
+                                    <span className="text-base font-semibold text-white">Total:</span>
                                     <span className="text-xl font-black text-neon-green">
                                         ₹{total.toFixed(2)}
                                     </span>
                                 </div>
+
+                                {/* Proceed to Checkout */}
                                 <button
                                     onClick={goToUsername}
                                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-neon-green/20 to-neon-green/10 border border-neon-green/30 py-3.5 text-sm font-bold text-neon-green transition-all duration-300 hover:from-neon-green/30 hover:to-neon-green/20 hover:shadow-glow-green active:scale-[0.98] cursor-pointer"
                                 >
-                                    Checkout — ₹{total.toFixed(2)}
+                                    Proceed to Checkout
                                 </button>
+
+                                {/* Clear Cart */}
                                 <button
                                     onClick={clearCart}
-                                    className="w-full text-center text-xs text-white/20 hover:text-red-400/60 transition-colors cursor-pointer"
+                                    className="w-full rounded-xl border border-white/10 py-2.5 text-center text-xs font-medium text-white/40 hover:text-red-400 hover:border-red-400/30 transition-all cursor-pointer"
                                 >
-                                    Clear entire cart
+                                    Clear Cart
                                 </button>
                             </div>
                         )}
