@@ -22,6 +22,10 @@ export interface ProductDoc {
     perks: string[];
     badge?: string;
     popular?: boolean;
+    // ─── Flash Sale Fields ─────────────────────────────────
+    salePercent?: number;
+    saleStartAt?: string;
+    saleEndAt?: string;
 }
 
 // ─── Data Fetcher ──────────────────────────────────────────────
@@ -38,6 +42,8 @@ async function getProducts(): Promise<ProductDoc[]> {
         return products.map((p) => ({
             ...p,
             _id: p._id.toString(),
+            saleStartAt: p.saleStartAt ? new Date(p.saleStartAt).toISOString() : undefined,
+            saleEndAt: p.saleEndAt ? new Date(p.saleEndAt).toISOString() : undefined,
         })) as ProductDoc[];
     } catch (error) {
         console.error("Fetch products error:", error);

@@ -14,6 +14,7 @@ import {
     Trash2,
     X,
     Loader2,
+    Flame,
     Star,
     Tag,
     ImageIcon,
@@ -43,6 +44,10 @@ const emptyForm = {
     perks: [""],
     badge: "",
     popular: false,
+    // ─── Flash Sale Fields ────────────
+    salePercent: 0,
+    saleStartAt: "",
+    saleEndAt: "",
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -80,6 +85,9 @@ export default function ProductsClient({
             perks: product.perks.length > 0 ? product.perks : [""],
             badge: product.badge || "",
             popular: product.popular || false,
+            salePercent: product.salePercent || 0,
+            saleStartAt: product.saleStartAt ? product.saleStartAt.slice(0, 16) : "",
+            saleEndAt: product.saleEndAt ? product.saleEndAt.slice(0, 16) : "",
         });
         setEditingId(product._id);
         setShowModal(true);
@@ -95,6 +103,9 @@ export default function ProductsClient({
                 ...form,
                 perks: cleanedPerks,
                 badge: form.badge || undefined,
+                salePercent: form.salePercent || undefined,
+                saleStartAt: form.saleStartAt || undefined,
+                saleEndAt: form.saleEndAt || undefined,
             };
 
             if (editingId) {
@@ -265,6 +276,12 @@ export default function ProductsClient({
                                     <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-lg text-xs font-medium">
                                         <Star className="w-3 h-3" />
                                         Popular
+                                    </span>
+                                )}
+                                {product.salePercent && product.salePercent > 0 && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-bold">
+                                        <Flame className="w-3 h-3" />
+                                        {product.salePercent}% OFF
                                     </span>
                                 )}
                             </div>
@@ -559,6 +576,80 @@ export default function ProductsClient({
                                         </span>
                                     </label>
                                 </div>
+                            </div>
+
+                            {/* ═══ Flash Sale Section ═══ */}
+                            <div className="border-t border-zinc-800/50 pt-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Flame className="w-4 h-4 text-red-400" />
+                                    <p className="text-zinc-300 text-sm font-semibold">Flash Sale Settings</p>
+                                </div>
+
+                                {/* Sale Percent */}
+                                <div className="mb-3">
+                                    <label className="block text-zinc-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
+                                        Discount Percentage
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="99"
+                                        value={form.salePercent || ""}
+                                        onChange={(e) =>
+                                            setForm({
+                                                ...form,
+                                                salePercent: parseInt(e.target.value) || 0,
+                                            })
+                                        }
+                                        placeholder="e.g. 50 for 50% OFF"
+                                        className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-white placeholder-zinc-600 text-sm focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all"
+                                    />
+                                </div>
+
+                                {/* Sale Start + End (Row) */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-zinc-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
+                                            Sale Start
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            value={form.saleStartAt}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    saleStartAt: e.target.value,
+                                                })
+                                            }
+                                            className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-white text-sm focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all [color-scheme:dark]"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-zinc-400 text-xs uppercase tracking-wider mb-1.5 font-medium">
+                                            Sale End
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            value={form.saleEndAt}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    saleEndAt: e.target.value,
+                                                })
+                                            }
+                                            className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700/50 rounded-xl text-white text-sm focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all [color-scheme:dark]"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Sale Preview */}
+                                {form.salePercent > 0 && (
+                                    <div className="mt-3 p-3 bg-red-500/5 border border-red-500/15 rounded-xl">
+                                        <p className="text-red-400 text-xs font-medium">
+                                            💰 Sale Price Preview: ₹{form.price} → ₹{(form.price * (1 - form.salePercent / 100)).toFixed(2)} ({form.salePercent}% OFF)
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Dynamic Perks */}

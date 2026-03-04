@@ -125,13 +125,27 @@ export async function POST(request: Request) {
                 );
             }
 
-            const lineTotal = serverProduct.price * cartItem.quantity;
+            // ── Apply Flash Sale discount if product is currently on sale ──
+            let effectivePrice = serverProduct.price;
+            const now = Date.now();
+            if (
+                serverProduct.salePercent &&
+                serverProduct.saleEndAt &&
+                now <= new Date(serverProduct.saleEndAt).getTime() &&
+                (!serverProduct.saleStartAt || now >= new Date(serverProduct.saleStartAt).getTime())
+            ) {
+                effectivePrice = parseFloat(
+                    (serverProduct.price * (1 - serverProduct.salePercent / 100)).toFixed(2)
+                );
+            }
+
+            const lineTotal = effectivePrice * cartItem.quantity;
             serverTotal += lineTotal;
 
             validatedItems.push({
                 id: serverProduct.id,
                 name: serverProduct.name,
-                price: serverProduct.price,
+                price: effectivePrice,
                 quantity: cartItem.quantity,
                 lineTotal: parseFloat(lineTotal.toFixed(2)),
             });

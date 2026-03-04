@@ -21,6 +21,10 @@ interface ProductData {
     perks: string[];
     badge?: string;
     popular?: boolean;
+    // ─── Flash Sale Fields ─────────────────────────────────
+    salePercent?: number;      // e.g. 50 for "50% OFF"
+    saleStartAt?: string;      // ISO date string
+    saleEndAt?: string;        // ISO date string
 }
 
 // ─── Add Product ───────────────────────────────────────────────
@@ -38,6 +42,9 @@ export async function addProduct(data: ProductData) {
         await db.collection("products").insertOne({
             id,
             ...data,
+            // Store sale dates as proper Date objects for MongoDB queries
+            saleStartAt: data.saleStartAt ? new Date(data.saleStartAt) : undefined,
+            saleEndAt: data.saleEndAt ? new Date(data.saleEndAt) : undefined,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -63,6 +70,9 @@ export async function updateProduct(mongoId: string, data: ProductData) {
             {
                 $set: {
                     ...data,
+                    // Store sale dates as proper Date objects for MongoDB queries
+                    saleStartAt: data.saleStartAt ? new Date(data.saleStartAt) : undefined,
+                    saleEndAt: data.saleEndAt ? new Date(data.saleEndAt) : undefined,
                     updatedAt: new Date(),
                 },
             }

@@ -12,8 +12,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingCart, Check, Star } from "lucide-react";
-import { type Product } from "@/lib/data";
+import { type Product, isProductOnSale, getEffectivePrice } from "@/lib/data";
 import { useCartStore } from "@/store/useCartStore";
+import FlashSaleBadge from "./FlashSaleBadge";
 
 // ─── Props ─────────────────────────────────────────────────────
 
@@ -50,7 +51,9 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
 
     const handleAdd = () => {
         if (!product) return;
-        addToCart(product);
+        // Pass effective (discounted) price to cart
+        const effectivePrice = getEffectivePrice(product);
+        addToCart({ ...product, price: effectivePrice });
         setAdded(true);
         setTimeout(() => setAdded(false), 1500);
     };
@@ -126,14 +129,37 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                         {/* ── Content ── */}
                         <div className="flex-1 overflow-y-auto px-5 pt-4 pb-5">
                             {/* Name + Price */}
-                            <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex items-start justify-between gap-3 mb-1">
                                 <h2 className="text-xl md:text-2xl font-bold text-white leading-tight">
                                     {product.name}
                                 </h2>
-                                <span className={`text-xl md:text-2xl font-black whitespace-nowrap ${accentColors[product.category] || "text-neon-green"}`}>
-                                    ₹{product.price.toFixed(2)}
-                                </span>
+                                <div className="flex flex-col items-end">
+                                    {isProductOnSale(product) ? (
+                                        <>
+                                            <span className="text-xl md:text-2xl font-black whitespace-nowrap text-red-400">
+                                                ₹{getEffectivePrice(product).toFixed(2)}
+                                            </span>
+                                            <span className="text-xs text-white/30 line-through whitespace-nowrap">
+                                                ₹{product.price.toFixed(2)}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span className={`text-xl md:text-2xl font-black whitespace-nowrap ${accentColors[product.category] || "text-neon-green"}`}>
+                                            ₹{product.price.toFixed(2)}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
+
+                            {/* Flash Sale Timer (full countdown, only in modal) */}
+                            {isProductOnSale(product) && (
+                                <div className="mb-4">
+                                    <FlashSaleBadge
+                                        salePercent={product.salePercent!}
+                                        saleEndAt={product.saleEndAt}
+                                    />
+                                </div>
+                            )}
 
                             {/* Description */}
                             <p className="text-sm text-white/50 leading-relaxed mb-5">
@@ -175,7 +201,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                                 ) : (
                                     <>
                                         <ShoppingCart className="h-4 w-4" />
-                                        Add to Cart — ₹{product.price.toFixed(2)}
+                                        Add to Cart — ₹{getEffectivePrice(product).toFixed(2)}
                                     </>
                                 )}
                             </button>

@@ -15,8 +15,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";                        // For entrance + hover animations
 import { ShoppingCart, Check, Star } from "lucide-react";      // Icons
-import { type Product } from "@/lib/data";                     // Product type definition
-import { useCartStore } from "@/store/useCartStore";           // Global cart state
+import { type Product, isProductOnSale, getEffectivePrice } from "@/lib/data";
+import { useCartStore } from "@/store/useCartStore";
+import FlashSaleBadge from "./FlashSaleBadge";
 
 // ─── Props Interface ───────────────────────────────────────────
 
@@ -91,7 +92,9 @@ export default function ProductCard({ product, index, onCardClick }: ProductCard
     // Uses stopPropagation so clicking the button doesn't also open the modal
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();    // Prevent card click (modal) from firing
-        addToCart(product);     // Add product to Zustand store
+        // If product is on sale, pass the effective (discounted) price to cart
+        const effectivePrice = getEffectivePrice(product);
+        addToCart({ ...product, price: effectivePrice });
         setAdded(true);         // Show "Added ✓" feedback
         setTimeout(() => setAdded(false), 1500); // Revert after 1.5s
     };
@@ -111,9 +114,20 @@ export default function ProductCard({ product, index, onCardClick }: ProductCard
         >
             {/* ── Badge (top-right corner) ──
           Shows labels like "Popular", "Hot", "New", etc. */}
-            {product.badge && (
+            {product.badge && !isProductOnSale(product) && (
                 <div className={`absolute top-1.5 right-1.5 md:top-3 md:right-3 z-20 rounded-full border px-1.5 md:px-2.5 py-0.5 text-[7px] md:text-[10px] font-bold uppercase tracking-wider ${badgeColors[product.badge] || "bg-white/10 text-white/60 border-white/20"}`}>
                     {product.badge}
+                </div>
+            )}
+
+            {/* ── Flash Sale Badge (top-right corner, replaces normal badge if on sale) ── */}
+            {isProductOnSale(product) && (
+                <div className="absolute top-1.5 right-1.5 md:top-3 md:right-3 z-20">
+                    <FlashSaleBadge
+                        salePercent={product.salePercent!}
+                        saleEndAt={product.saleEndAt}
+                        compact
+                    />
                 </div>
             )}
 
@@ -172,9 +186,22 @@ export default function ProductCard({ product, index, onCardClick }: ProductCard
                     <h3 className="text-xs md:text-base font-bold text-white group-hover:text-white/90 transition-colors line-clamp-2 leading-tight break-words">
                         {product.name}
                     </h3>
-                    <span className={`text-xs md:text-lg font-black whitespace-nowrap ${accent.price}`}>
-                        ₹{product.price.toFixed(2)}
-                    </span>
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                        {isProductOnSale(product) ? (
+                            <>
+                                <span className={`text-xs md:text-lg font-black whitespace-nowrap text-red-400`}>
+                                    ₹{getEffectivePrice(product).toFixed(2)}
+                                </span>
+                                <span className="text-[9px] md:text-xs text-white/30 line-through whitespace-nowrap">
+                                    ₹{product.price.toFixed(2)}
+                                </span>
+                            </>
+                        ) : (
+                            <span className={`text-xs md:text-lg font-black whitespace-nowrap ${accent.price}`}>
+                                ₹{product.price.toFixed(2)}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Short description */}

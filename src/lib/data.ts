@@ -1,41 +1,106 @@
-// ═══════════════════════════════════════════════════════════════
+// ============================================================================
 // FILE: data.ts
-// PURPOSE: Central data store for the entire application.
-//          Contains TypeScript types, product catalog, category
-//          definitions, and mock recent-purchase feed data.
+// PURPOSE: This is the "brain" of the store. It contains all the TypeScript
+//          type definitions (blueprints for data shapes), helper functions
+//          for calculating sale prices, the product catalog, category list,
+//          and mock data for the recent purchases ticker.
+//          Think of it as the store's master inventory book.
 // LOCATION: src/lib/data.ts
-// ═══════════════════════════════════════════════════════════════
+// ============================================================================
 
 // ─── Type Definitions ──────────────────────────────────────────
 
 /**
- * Category — Union type for all product categories.
- * "all" is a virtual category used for the "show everything" filter.
+ * Category — The different sections of the store.
+ * "all" is a special filter meaning "show everything".
+ * The others correspond to real product categories.
  */
 export type Category = "all" | "ranks" | "kits" | "keys" | "misc";
 
 /**
- * Product — Shape of every item sold in the store.
- * - `id`          : unique slug used as React key and for routing
- * - `name`        : display name shown on the card
- * - `price`       : price in USD (always a number, formatted at render time)
- * - `category`    : which tab/filter this product belongs to
- * - `image`       : path to the product image in /public
- * - `description` : one-liner shown under the product name
- * - `perks`       : list of bullet-point benefits displayed on the card
- * - `badge`       : optional label like "Popular", "Hot", "New" (top-right corner)
- * - `popular`     : optional flag that shows a ⭐ star indicator on the card
+ * Product — The blueprint for every item sold in the store.
+ * Every product in our database must have these fields (unless marked optional ?)
+ *
+ * Think of this like a product label that lists everything about an item:
+ * - What it's called, how much it costs, what category it belongs to, etc.
  */
 export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: Category;
-  image: string;
-  description: string;
-  perks: string[];
-  badge?: string;
-  popular?: boolean;
+  id: string;            // Unique slug used as React key (e.g. "rank-warrior")
+  name: string;          // Display name shown on the card (e.g. "Warrior Rank")
+  price: number;         // Original price in ₹ (before any discounts)
+  category: Category;    // Which tab/filter this belongs to
+  image: string;         // Path to product image in /public folder
+  description: string;   // One-liner shown under the product name
+  perks: string[];       // List of bullet-point benefits
+  badge?: string;        // Optional label like "Popular", "Hot", "New" (top corner)
+  popular?: boolean;     // If true, shows a ⭐ star indicator on the card
+
+  // ─── Flash Sale Fields (set via Admin Panel) ────────────
+  // These are optional because not every product is on sale.
+  // When an admin sets these in the Admin Panel, the product
+  // shows a "🔥 X% OFF" badge and a countdown timer.
+  salePercent?: number;    // Discount percentage, e.g. 50 means "50% OFF"
+  saleStartAt?: string;    // When the sale starts (ISO date string). Optional.
+  saleEndAt?: string;      // When the sale ends (ISO date string). Optional.
+}
+
+/**
+ * isProductOnSale — Checks if a product currently has an active sale.
+ *
+ * Think of this function like a store employee checking if a product's
+ * "SALE" sticker is still valid:
+ *   Step 1: Does the product even have a discount set? If not → no sale.
+ *   Step 2: Has the sale started yet? If a start date is set and we haven't
+ *           reached it → not active yet.
+ *   Step 3: Has the sale expired? If an end date is set and we've passed it
+ *           → sale is over.
+ *   Step 4: If all checks pass → the sale is active! Show the badge!
+ *
+ * FLEXIBLE BEHAVIOR:
+ *   - If only salePercent is set (no dates) → permanent sale (always active)
+ *   - If salePercent + saleEndAt → active until the end date
+ *   - If salePercent + saleStartAt + saleEndAt → active only within the window
+ *
+ * @param product — The product to check
+ * @returns true if the sale is currently active, false otherwise
+ */
+export function isProductOnSale(product: Product): boolean {
+  // Step 1: No discount or 0% discount? → no sale
+  if (!product.salePercent || product.salePercent <= 0) return false;
+
+  const now = Date.now(); // Current time in milliseconds
+
+  // Step 2: Sale hasn't started yet?
+  if (product.saleStartAt && now < new Date(product.saleStartAt).getTime()) return false;
+
+  // Step 3: Sale has already ended?
+  if (product.saleEndAt && now > new Date(product.saleEndAt).getTime()) return false;
+
+  // Step 4: All checks passed — the sale is active! 🎉
+  return true;
+}
+
+/**
+ * getEffectivePrice — Calculates the actual price the customer pays.
+ *
+ * If the product is on sale, it applies the discount.
+ * If not, it returns the original price unchanged.
+ *
+ * Example:
+ *   Original price: ₹100, Sale: 30% OFF
+ *   Effective price: ₹100 × (1 - 30/100) = ₹100 × 0.70 = ₹70.00
+ *
+ * @param product — The product to calculate price for
+ * @returns The final price in ₹ (with discount applied if applicable)
+ */
+export function getEffectivePrice(product: Product): number {
+  if (isProductOnSale(product)) {
+    // Calculate discounted price: originalPrice × (1 - discountPercent/100)
+    // parseFloat + toFixed(2) ensures we get a clean number like 70.00
+    return parseFloat((product.price * (1 - product.salePercent! / 100)).toFixed(2));
+  }
+  // No sale active → return the original price as-is
+  return product.price;
 }
 
 /**

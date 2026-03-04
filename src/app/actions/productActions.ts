@@ -31,6 +31,9 @@ export async function getLiveStoreProducts(): Promise<Product[]> {
             return {
                 ...rest,
                 id: _id.toString(), // Map _id back to id expected by frontend
+                // Ensure sale date fields are serialized as ISO strings
+                saleStartAt: p.saleStartAt ? new Date(p.saleStartAt).toISOString() : undefined,
+                saleEndAt: p.saleEndAt ? new Date(p.saleEndAt).toISOString() : undefined,
             } as Product;
         });
 

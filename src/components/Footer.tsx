@@ -20,6 +20,7 @@ import { Sword, Heart, ChevronDown, Mail } from "lucide-react";
 const quickLinks = [
     { label: "Home", url: "#" },
     { label: "Store", url: "#store" },
+    { label: "Track Your Order", url: "/track-order" },
     { label: "Rules", url: "#" },
     { label: "Support", url: "https://mail.google.com/mail/?view=cm&to=princeprajapti2589@gmail.com" },
 ];
