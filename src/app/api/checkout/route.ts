@@ -28,6 +28,7 @@ interface CheckoutRequest {
     edition: "java" | "bedrock";   // Which Minecraft edition the player uses
     utrNumber: string;             // 12-digit UPI Transaction Reference number
     items: CheckoutRequestItem[];  // Cart items with quantities
+    couponCode?: string;           // Optional discount coupon code
 }
 
 // ─── POST Handler ──────────────────────────────────────────────
@@ -144,7 +145,43 @@ export async function POST(request: Request) {
             .substring(2, 7)
             .toUpperCase()}`;
 
-        const totalAmount = parseFloat(serverTotal.toFixed(2));
+        let totalAmount = parseFloat(serverTotal.toFixed(2));
+        let discount = 0;
+        let appliedCouponCode: string | null = null;
+
+        // ──────────────────────────────────────────────────────
+        // 6b. Validate coupon if provided
+        // ──────────────────────────────────────────────────────
+        if (body.couponCode) {
+            const db = await connectToDatabase();
+            const coupon = await db.collection("coupons").findOne({
+                code: body.couponCode.toUpperCase().trim(),
+                active: true,
+            });
+
+            if (coupon) {
+                const isExpired = coupon.expiresAt && new Date(coupon.expiresAt) < new Date();
+                const isMaxed = coupon.maxUses !== -1 && coupon.usedCount >= coupon.maxUses;
+                const meetsMinium = totalAmount >= (coupon.minOrder || 0);
+
+                if (!isExpired && !isMaxed && meetsMinium) {
+                    if (coupon.type === "percentage") {
+                        discount = totalAmount * (coupon.value / 100);
+                    } else {
+                        discount = coupon.value;
+                    }
+                    discount = parseFloat(Math.min(discount, totalAmount).toFixed(2));
+                    totalAmount = parseFloat((totalAmount - discount).toFixed(2));
+                    appliedCouponCode = coupon.code;
+
+                    // Increment usage count
+                    await db.collection("coupons").updateOne(
+                        { code: coupon.code },
+                        { $inc: { usedCount: 1 } }
+                    );
+                }
+            }
+        }
 
         // ──────────────────────────────────────────────────────
         // 8. Log the order for manual verification
@@ -189,6 +226,7 @@ export async function POST(request: Request) {
                 utrNumber,
                 items: validatedItems,
                 total: totalAmount,
+                ...(appliedCouponCode && { couponCode: appliedCouponCode, discount }),
                 status: "pending",
                 createdAt: new Date(),
                 updatedAt: new Date(),

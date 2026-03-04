@@ -203,9 +203,15 @@ async function getAnalyticsData() {
 
 export const dynamic = "force-dynamic";
 
-export default async function AnalyticsPage() {
-    const data = await getAnalyticsData();
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
+async function AnalyticsData() {
+    const data = await getAnalyticsData();
+    return <AnalyticsClient data={data} />;
+}
+
+export default function AnalyticsPage() {
     return (
         <div>
             <div className="mb-8">
@@ -220,7 +226,14 @@ export default async function AnalyticsPage() {
                 </p>
             </div>
 
-            <AnalyticsClient data={data} />
+            <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-32">
+                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mb-4" />
+                    <p className="text-zinc-500 text-sm">Crunching data...</p>
+                </div>
+            }>
+                <AnalyticsData />
+            </Suspense>
         </div>
     );
 }

@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: ProductGrid.tsx
 // PURPOSE: Renders the store product section with:
-//          1. If "All" is selected → groups products by category,
-//             each with its own horizontal scroll row on mobile
-//          2. If a specific category is selected → shows one row
-//          3. Product Detail Modal opens on card click
+//          1. Search bar + sort dropdown for filtering
+//          2. If "All" is selected → groups products by category
+//          3. If a specific category is selected → shows one row
+//          4. Product Detail Modal opens on card click
 //          Mobile: horizontal swipeable rows per category
 //          Desktop: grid layout per category section
 // LOCATION: src/components/ProductGrid.tsx
@@ -15,7 +15,7 @@
 // ─── Imports ───────────────────────────────────────────────────
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Package, Loader2 } from "lucide-react";
+import { Package, Loader2, Search, ChevronDown, X } from "lucide-react";
 import { categories, type Category, type Product } from "@/lib/data";
 import { getLiveStoreProducts } from "@/app/actions/productActions";
 import ProductCard from "./ProductCard";
@@ -37,9 +37,18 @@ const categoryLabels: Record<string, string> = {
     misc: "✨ Miscellaneous",
 };
 
+// ─── Sort Options ──────────────────────────────────────────────
+
+type SortOption = "default" | "price_asc" | "price_desc" | "popular";
+
+const sortOptions: { value: SortOption; label: string }[] = [
+    { value: "default", label: "Default" },
+    { value: "price_asc", label: "Price: Low → High" },
+    { value: "price_desc", label: "Price: High → Low" },
+    { value: "popular", label: "Popular First" },
+];
+
 // ─── Horizontal scroll container classes ───────────────────────
-// Mobile: flex horizontal scroll with snap
-// Desktop: responsive grid
 
 const ROW_CLASSES =
     "flex flex-row flex-nowrap overflow-x-auto gap-3 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:pb-0 xl:grid-cols-4";
@@ -52,6 +61,10 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
     // ── Store Data State ──
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // ── Search & Sort State ──
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState<SortOption>("default");
 
     // ── Product Detail Modal state ──
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -73,32 +86,58 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
         fetchProducts();
     }, []);
 
+    // ── Filter + Sort products ──
+    const processedProducts = useMemo(() => {
+        let result = [...products];
+
+        // Search filter
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase().trim();
+            result = result.filter(
+                (p) =>
+                    p.name.toLowerCase().includes(q) ||
+                    p.description?.toLowerCase().includes(q) ||
+                    p.category.toLowerCase().includes(q)
+            );
+        }
+
+        // Sort
+        switch (sortBy) {
+            case "price_asc":
+                result.sort((a, b) => a.price - b.price);
+                break;
+            case "price_desc":
+                result.sort((a, b) => b.price - a.price);
+                break;
+            case "popular":
+                result.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
+                break;
+        }
+
+        return result;
+    }, [products, searchQuery, sortBy]);
+
     // ── Group products by category ──
-    // Returns an array of { category, label, products } objects.
-    // When a specific category is selected, returns only that one group.
     const groupedProducts = useMemo(() => {
-        // List of real categories (excluding "all")
         const realCategories = categories.filter((c) => c.key !== "all");
 
         if (activeCategory === "all") {
-            // Group all products by their category
             return realCategories
                 .map((cat) => ({
                     key: cat.key,
                     label: categoryLabels[cat.key] || cat.label,
-                    items: products.filter((p) => p.category === cat.key),
+                    items: processedProducts.filter((p) => p.category === cat.key),
                 }))
-                .filter((group) => group.items.length > 0); // Skip empty categories
+                .filter((group) => group.items.length > 0);
         }
 
-        // Single category selected
-        const filtered = products.filter((p) => p.category === activeCategory);
+        const filtered = processedProducts.filter((p) => p.category === activeCategory);
         return [{
             key: activeCategory,
             label: categoryLabels[activeCategory] || activeCategory,
             items: filtered,
         }];
-    }, [activeCategory, products]);
+    }, [activeCategory, processedProducts]);
 
     // Total item count for header
     const totalItems = groupedProducts.reduce((sum, g) => sum + g.items.length, 0);
@@ -128,6 +167,51 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
                 <p className="mt-2 text-sm text-white/30">
                     Click any item to learn more. All purchases are delivered instantly.
                 </p>
+            </motion.div>
+
+            {/* ── Search & Sort Bar ── */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="flex flex-col sm:flex-row gap-3 mb-8 max-w-2xl mx-auto"
+            >
+                {/* Search Input */}
+                <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/25" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search products..."
+                        className="w-full pl-10 pr-8 py-2.5 bg-surface-secondary/40 border border-white/5 rounded-xl text-sm text-white placeholder-white/25 outline-none focus:border-neon-green/30 focus:ring-1 focus:ring-neon-green/20 transition-all"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors cursor-pointer"
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </button>
+                    )}
+                </div>
+
+                {/* Sort Dropdown */}
+                <div className="relative">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as SortOption)}
+                        className="appearance-none pl-3 pr-8 py-2.5 bg-surface-secondary/40 border border-white/5 rounded-xl text-sm text-white/70 outline-none focus:border-neon-green/30 transition-all cursor-pointer w-full sm:w-auto"
+                    >
+                        {sortOptions.map((opt) => (
+                            <option key={opt.value} value={opt.value} className="bg-zinc-900">
+                                {opt.label}
+                            </option>
+                        ))}
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/25 pointer-events-none" />
+                </div>
             </motion.div>
 
             {/* ── Categorized Product Rows ── */}
@@ -179,7 +263,19 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
             {!isLoading && totalItems === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                     <Package className="h-12 w-12 text-white/10 mb-4" />
-                    <p className="text-white/30 text-sm">No items found in this category.</p>
+                    <p className="text-white/30 text-sm">
+                        {searchQuery
+                            ? `No products found for "${searchQuery}"`
+                            : "No items found in this category."}
+                    </p>
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery("")}
+                            className="mt-3 px-4 py-2 text-xs text-neon-green border border-neon-green/20 rounded-xl hover:bg-neon-green/10 transition-all cursor-pointer"
+                        >
+                            Clear Search
+                        </button>
+                    )}
                 </div>
             )}
 
@@ -191,3 +287,4 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
         </section>
     );
 }
+

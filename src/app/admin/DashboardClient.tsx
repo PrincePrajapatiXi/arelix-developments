@@ -74,7 +74,6 @@ interface TopProduct {
 }
 
 interface DashboardProps {
-    greeting: string;
     statCards: StatCard[];
     chartData: ChartDay[];
     recentOrders: RecentOrder[];
@@ -87,7 +86,6 @@ interface DashboardProps {
 // ═══════════════════════════════════════════════════════════════
 
 export default function DashboardClient({
-    greeting,
     statCards,
     chartData,
     recentOrders,
@@ -125,24 +123,6 @@ export default function DashboardClient({
 
     return (
         <div>
-            {/* ── Page Header with Greeting ── */}
-            <div className="mb-8">
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex items-center gap-3 mb-2"
-                >
-                    <TrendingUp className="w-6 h-6 text-emerald-400" />
-                    <h1 className="text-2xl md:text-3xl font-bold text-white">
-                        {greeting}, Admin ☀️
-                    </h1>
-                </motion.div>
-                <p className="text-zinc-500 text-sm">
-                    Here&apos;s what&apos;s happening with your store today
-                </p>
-            </div>
-
             {/* ── Stats Grid (6 cards) ── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
                 {statCards.map((card, i) => {
@@ -255,8 +235,8 @@ export default function DashboardClient({
                                         ease: "easeOut",
                                     }}
                                     className={`w-full rounded-lg ${day.revenue > 0
-                                            ? "bg-gradient-to-t from-emerald-600 to-emerald-400"
-                                            : "bg-zinc-800"
+                                        ? "bg-gradient-to-t from-emerald-600 to-emerald-400"
+                                        : "bg-zinc-800"
                                         }`}
                                     style={{ minHeight: "4px" }}
                                 />
@@ -369,12 +349,12 @@ export default function DashboardClient({
                                             <div className="flex items-center gap-2.5">
                                                 <span
                                                     className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold ${idx === 0
-                                                            ? "bg-amber-500/20 text-amber-400"
-                                                            : idx === 1
-                                                                ? "bg-zinc-500/20 text-zinc-300"
-                                                                : idx === 2
-                                                                    ? "bg-orange-500/20 text-orange-400"
-                                                                    : "bg-zinc-800 text-zinc-500"
+                                                        ? "bg-amber-500/20 text-amber-400"
+                                                        : idx === 1
+                                                            ? "bg-zinc-500/20 text-zinc-300"
+                                                            : idx === 2
+                                                                ? "bg-orange-500/20 text-orange-400"
+                                                                : "bg-zinc-800 text-zinc-500"
                                                         }`}
                                                 >
                                                     {idx + 1}
@@ -408,8 +388,8 @@ export default function DashboardClient({
                                                     ease: "easeOut",
                                                 }}
                                                 className={`h-full rounded-full ${idx === 0
-                                                        ? "bg-gradient-to-r from-amber-500 to-amber-400"
-                                                        : "bg-gradient-to-r from-emerald-600 to-emerald-400"
+                                                    ? "bg-gradient-to-r from-amber-500 to-amber-400"
+                                                    : "bg-gradient-to-r from-emerald-600 to-emerald-400"
                                                     }`}
                                             />
                                         </div>

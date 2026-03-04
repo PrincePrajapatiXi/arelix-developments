@@ -51,26 +51,42 @@ async function getProducts(): Promise<ProductDoc[]> {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminProductsPage() {
-    const products = await getProducts();
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
+async function ProductsData() {
+    const products = await getProducts();
+    return (
+        <>
+            <p className="text-zinc-500 text-sm mb-8 -mt-6">
+                Manage your store catalog • {products.length} products
+            </p>
+            <ProductsClient products={products} />
+        </>
+    );
+}
+
+export default function AdminProductsPage() {
     return (
         <div>
-            {/* ── Page Header ── */}
-            <div className="mb-8">
+            {/* ── Page Header (Instant) ── */}
+            <div className="mb-2">
                 <div className="flex items-center gap-3 mb-2">
                     <Package className="w-6 h-6 text-emerald-400" />
                     <h1 className="text-2xl md:text-3xl font-bold text-white">
                         Products
                     </h1>
                 </div>
-                <p className="text-zinc-500 text-sm">
-                    Manage your store catalog • {products.length} products
-                </p>
             </div>
 
-            {/* ── Products Client Component ── */}
-            <ProductsClient products={products} />
+            <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-32">
+                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mb-4" />
+                    <p className="text-zinc-500 text-sm">Loading products...</p>
+                </div>
+            }>
+                <ProductsData />
+            </Suspense>
         </div>
     );
 }

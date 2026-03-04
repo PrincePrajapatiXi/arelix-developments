@@ -20,6 +20,7 @@ import ProductGrid from "@/components/ProductGrid";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar"; // Slide-in cart panel
 import ToastContainer from "@/components/Toast";    // "Added to cart!" notifications
+import ServerStatus from "@/components/ServerStatus"; // MC server status widget
 
 // ─── Type Imports ──────────────────────────────────────────────
 import { type Category } from "@/lib/data";
@@ -45,6 +46,11 @@ export default function Home() {
       />
 
       <main>
+        {/* ── Server Status Widget — shows online/offline + player count ── */}
+        <div className="fixed bottom-4 left-4 z-50">
+          <ServerStatus />
+        </div>
+
         {/* ── Hero Banner — full-screen intro with animated background ── */}
         <HeroSection />
 

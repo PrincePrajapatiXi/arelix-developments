@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -22,6 +22,9 @@ import {
     BarChart3,
     Users,
     Settings,
+    Ticket,
+    ScrollText,
+    Loader2
 } from "lucide-react";
 
 // ─── Sidebar Navigation Items (Grouped) ────────────────────────
@@ -45,6 +48,11 @@ const navGroups = [
                 href: "/admin/products",
                 icon: Package,
             },
+            {
+                label: "Coupons",
+                href: "/admin/coupons",
+                icon: Ticket,
+            },
         ],
     },
     {
@@ -59,6 +67,11 @@ const navGroups = [
                 label: "Customers",
                 href: "/admin/customers",
                 icon: Users,
+            },
+            {
+                label: "Activity Log",
+                href: "/admin/activity",
+                icon: ScrollText,
             },
         ],
     },
@@ -179,8 +192,8 @@ export default function AdminLayout({
                                         >
                                             <item.icon
                                                 className={`w-[18px] h-[18px] ${active
-                                                        ? "text-emerald-400"
-                                                        : "text-zinc-500 group-hover:text-zinc-300"
+                                                    ? "text-emerald-400"
+                                                    : "text-zinc-500 group-hover:text-zinc-300"
                                                     }`}
                                             />
                                             {item.label}
@@ -229,7 +242,19 @@ export default function AdminLayout({
                 </header>
 
                 {/* ── Page Content ── */}
-                <main className="flex-1 p-4 md:p-8">{children}</main>
+                <main className="flex-1 p-4 md:p-8">
+                    <Suspense fallback={
+                        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                            <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
+                            <h2 className="text-xl font-bold text-white mb-2">Loading</h2>
+                            <p className="text-zinc-500 text-sm">
+                                Fetching data...
+                            </p>
+                        </div>
+                    }>
+                        {children}
+                    </Suspense>
+                </main>
             </div>
         </div>
     );

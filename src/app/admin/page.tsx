@@ -214,14 +214,11 @@ async function getDashboardData() {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboardPage() {
-    const data = await getDashboardData();
+import { Suspense } from "react";
+import { Loader2, TrendingUp } from "lucide-react";
 
-    // Determine greeting based on hour
-    const hour = new Date().getHours();
-    let greeting = "Good Evening";
-    if (hour < 12) greeting = "Good Morning";
-    else if (hour < 17) greeting = "Good Afternoon";
+async function DashboardData() {
+    const data = await getDashboardData();
 
     const statCards = [
         {
@@ -306,12 +303,45 @@ export default async function AdminDashboardPage() {
 
     return (
         <DashboardClient
-            greeting={greeting}
             statCards={statCards}
             chartData={data.chartData}
             recentOrders={data.recentOrders}
             topProducts={data.topProducts}
             pendingOrders={data.pendingOrders}
         />
+    );
+}
+
+export default function AdminDashboardPage() {
+    // Determine greeting based on hour
+    const hour = new Date().getHours();
+    let greeting = "Good Evening";
+    if (hour < 12) greeting = "Good Morning";
+    else if (hour < 17) greeting = "Good Afternoon";
+
+    return (
+        <div>
+            {/* ── Page Header (Instant Load) ── */}
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                    <TrendingUp className="w-6 h-6 text-emerald-400" />
+                    <h1 className="text-2xl md:text-3xl font-bold text-white">
+                        {greeting}, Admin ☀️
+                    </h1>
+                </div>
+                <p className="text-zinc-500 text-sm">
+                    Here&apos;s what&apos;s happening with your store today
+                </p>
+            </div>
+
+            <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-32">
+                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mb-4" />
+                    <p className="text-zinc-500 text-sm">Loading dashboard data...</p>
+                </div>
+            }>
+                <DashboardData />
+            </Suspense>
+        </div>
     );
 }

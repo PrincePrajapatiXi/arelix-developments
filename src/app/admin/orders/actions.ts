@@ -9,6 +9,7 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { logActivity } from "@/lib/logActivity";
 
 /**
  * Approve an order — sets status to "success"
@@ -27,6 +28,7 @@ export async function approveOrder(orderId: string) {
         );
         revalidatePath("/admin/orders");
         revalidatePath("/admin");
+        await logActivity({ action: "order_approved", entity: orderId, details: "Order approved" });
         return { success: true };
     } catch (error) {
         console.error("Approve order error:", error);
@@ -51,6 +53,7 @@ export async function rejectOrder(orderId: string) {
         );
         revalidatePath("/admin/orders");
         revalidatePath("/admin");
+        await logActivity({ action: "order_rejected", entity: orderId, details: "Order rejected" });
         return { success: true };
     } catch (error) {
         console.error("Reject order error:", error);

@@ -29,6 +29,7 @@ import {
     ArrowRight,
     Monitor,
     Gamepad2,
+    Ticket,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import CartItemRow from "./CartItemRow";
@@ -95,8 +96,16 @@ export default function CartSidebar() {
         error?: string;
     } | null>(null);
 
+    // ── Coupon State ──
+    const [couponCode, setCouponCode] = useState("");
+    const [couponError, setCouponError] = useState("");
+    const [couponDiscount, setCouponDiscount] = useState(0);
+    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+    const [validatingCoupon, setValidatingCoupon] = useState(false);
+
     // ── Computed Values ──
-    const total = getTotal();
+    const subtotal = getTotal();
+    const total = Math.max(0, subtotal - couponDiscount);
     const itemCount = getItemCount();
 
     // ── Computed: Final username with Bedrock "." prefix ──
@@ -109,6 +118,42 @@ export default function CartSidebar() {
     // ═══════════════════════════════════════════════════════════
     // NAVIGATION HANDLERS
     // ═══════════════════════════════════════════════════════════
+
+    /** Apply coupon code */
+    const applyCoupon = async () => {
+        if (!couponCode.trim()) return;
+        setValidatingCoupon(true);
+        setCouponError("");
+        try {
+            const res = await fetch("/api/coupons/validate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: couponCode.trim(), cartTotal: subtotal }),
+            });
+            const data = await res.json();
+            if (data.valid) {
+                setCouponDiscount(data.discount);
+                setAppliedCoupon(data.coupon.code);
+                setCouponError("");
+            } else {
+                setCouponError(data.error || "Invalid coupon.");
+                setCouponDiscount(0);
+                setAppliedCoupon(null);
+            }
+        } catch {
+            setCouponError("Failed to validate coupon.");
+        } finally {
+            setValidatingCoupon(false);
+        }
+    };
+
+    /** Remove applied coupon */
+    const removeCoupon = () => {
+        setCouponCode("");
+        setCouponDiscount(0);
+        setAppliedCoupon(null);
+        setCouponError("");
+    };
 
     /** Cart → Username step */
     const goToUsername = () => {
@@ -178,6 +223,7 @@ export default function CartSidebar() {
                     minecraftUsername: finalUsername,
                     edition,
                     utrNumber: trimmedUtr,
+                    couponCode: appliedCoupon || undefined,
                     items: items.map((item) => ({
                         id: item.id,
                         quantity: item.quantity,
@@ -220,6 +266,7 @@ export default function CartSidebar() {
         setUtrNumber("");
         setUtrError("");
         setOrderResult(null);
+        removeCoupon();
         closeCart();
     };
 
@@ -638,7 +685,59 @@ export default function CartSidebar() {
                         {/* Cart footer */}
                         {step === "cart" && items.length > 0 && (
                             <div className="border-t border-white/5 px-6 py-4 space-y-3">
+                                {/* Coupon Code Input */}
+                                <div>
+                                    {appliedCoupon ? (
+                                        <div className="flex items-center justify-between px-3 py-2.5 bg-neon-green/5 border border-neon-green/20 rounded-xl">
+                                            <div className="flex items-center gap-2">
+                                                <Ticket className="h-3.5 w-3.5 text-neon-green" />
+                                                <span className="text-xs font-bold font-mono text-neon-green">{appliedCoupon}</span>
+                                                <span className="text-xs text-neon-green/60">−₹{couponDiscount.toFixed(2)}</span>
+                                            </div>
+                                            <button onClick={removeCoupon} className="text-white/40 hover:text-red-400 transition-colors cursor-pointer">
+                                                <X className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={couponCode}
+                                                onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponError(""); }}
+                                                onKeyDown={(e) => { if (e.key === "Enter") applyCoupon(); }}
+                                                placeholder="Coupon code"
+                                                className="flex-1 px-3 py-2 bg-surface-secondary/60 border border-white/10 rounded-xl text-xs text-white placeholder-white/20 outline-none focus:border-neon-green/30 font-mono"
+                                            />
+                                            <button
+                                                onClick={applyCoupon}
+                                                disabled={validatingCoupon || !couponCode.trim()}
+                                                className="px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-medium text-white/60 hover:text-neon-green hover:border-neon-green/30 transition-all cursor-pointer disabled:opacity-40"
+                                            >
+                                                {validatingCoupon ? "..." : "Apply"}
+                                            </button>
+                                        </div>
+                                    )}
+                                    {couponError && (
+                                        <p className="text-[10px] text-red-400 mt-1 flex items-center gap-1">
+                                            <AlertCircle className="h-3 w-3" />
+                                            {couponError}
+                                        </p>
+                                    )}
+                                </div>
+
                                 {/* Total */}
+                                {couponDiscount > 0 && (
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="text-white/40">Subtotal:</span>
+                                        <span className="text-white/40">₹{subtotal.toFixed(2)}</span>
+                                    </div>
+                                )}
+                                {couponDiscount > 0 && (
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="text-neon-green/60">Discount:</span>
+                                        <span className="text-neon-green/60">−₹{couponDiscount.toFixed(2)}</span>
+                                    </div>
+                                )}
                                 <div className="flex items-center justify-between">
                                     <span className="text-base font-semibold text-white">Total:</span>
                                     <span className="text-xl font-black text-neon-green">

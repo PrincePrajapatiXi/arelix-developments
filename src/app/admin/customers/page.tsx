@@ -76,24 +76,41 @@ async function getCustomersData() {
 
 export const dynamic = "force-dynamic";
 
-export default async function CustomersPage() {
-    const customers = await getCustomersData();
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
+async function CustomersData() {
+    const customers = await getCustomersData();
+    return (
+        <>
+            <p className="text-zinc-500 text-sm mb-8 -mt-6">
+                {customers.length} unique players have placed orders
+            </p>
+            <CustomersClient customers={customers} />
+        </>
+    );
+}
+
+export default function CustomersPage() {
     return (
         <div>
-            <div className="mb-8">
+            <div className="mb-2">
                 <div className="flex items-center gap-3 mb-2">
                     <Users className="w-6 h-6 text-emerald-400" />
                     <h1 className="text-2xl md:text-3xl font-bold text-white">
                         Customers
                     </h1>
                 </div>
-                <p className="text-zinc-500 text-sm">
-                    {customers.length} unique players have placed orders
-                </p>
             </div>
 
-            <CustomersClient customers={customers} />
+            <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-32">
+                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mb-4" />
+                    <p className="text-zinc-500 text-sm">Loading customers...</p>
+                </div>
+            }>
+                <CustomersData />
+            </Suspense>
         </div>
     );
 }

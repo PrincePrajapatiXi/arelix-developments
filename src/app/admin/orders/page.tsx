@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { connectToDatabase } from "@/lib/mongodb";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Download } from "lucide-react";
 import OrderTableClient from "./OrderTableClient";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -61,26 +61,54 @@ async function getOrders(): Promise<Order[]> {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOrdersPage() {
-    const orders = await getOrders();
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
+async function OrdersData() {
+    const orders = await getOrders();
+    return (
+        <>
+            {/* ── Page Header Data Update ── */}
+            <p className="text-zinc-500 text-sm mb-8 -mt-6">
+                Manage and verify customer orders • {orders.length} total
+            </p>
+            <OrderTableClient orders={orders} />
+        </>
+    );
+}
+
+export default function AdminOrdersPage() {
     return (
         <div>
-            {/* ── Page Header ── */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                    <ShoppingCart className="w-6 h-6 text-emerald-400" />
-                    <h1 className="text-2xl md:text-3xl font-bold text-white">
-                        Orders
-                    </h1>
+            {/* ── Page Header (Instant Load) ── */}
+            <div className="flex items-center justify-between mb-2">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <ShoppingCart className="w-6 h-6 text-emerald-400" />
+                        <h1 className="text-2xl md:text-3xl font-bold text-white">
+                            Orders
+                        </h1>
+                    </div>
                 </div>
-                <p className="text-zinc-500 text-sm">
-                    Manage and verify customer orders • {orders.length} total
-                </p>
+                <a
+                    href="/api/admin/orders/export"
+                    download
+                    className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-xl text-sm font-medium hover:bg-emerald-500/25 transition-all"
+                >
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                </a>
             </div>
 
-            {/* ── Orders Table (Client Component for interactivity) ── */}
-            <OrderTableClient orders={orders} />
+            {/* ── Orders Table (Suspended) ── */}
+            <Suspense fallback={
+                <div className="flex flex-col items-center justify-center py-32">
+                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin mb-4" />
+                    <p className="text-zinc-500 text-sm">Loading orders...</p>
+                </div>
+            }>
+                <OrdersData />
+            </Suspense>
         </div>
     );
 }
