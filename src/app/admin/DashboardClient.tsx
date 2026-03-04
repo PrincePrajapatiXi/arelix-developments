@@ -12,7 +12,6 @@ import {
     ShoppingCart,
     Clock,
     Package,
-    TrendingUp,
     ArrowUpRight,
     CalendarDays,
     Users,
