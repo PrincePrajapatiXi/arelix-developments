@@ -5,19 +5,7 @@
 // LOCATION: src/app/admin/page.tsx
 // ═══════════════════════════════════════════════════════════════
 
-import {
-    DollarSign,
-    ShoppingCart,
-    Clock,
-    Package,
-    TrendingUp,
-    ArrowUpRight,
-    CalendarDays,
-    Users,
-    CheckCircle2,
-    XCircle,
-    BarChart3,
-} from "lucide-react";
+
 import { connectToDatabase } from "@/lib/mongodb";
 import DashboardClient from "./DashboardClient";
 

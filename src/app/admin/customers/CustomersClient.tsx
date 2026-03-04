@@ -17,7 +17,6 @@ import {
     User,
     ShoppingCart,
     DollarSign,
-    Calendar,
     CheckCircle2,
     XCircle,
     Clock,
@@ -158,8 +157,8 @@ export default function CustomersClient({
                             key={sort.key}
                             onClick={() => setSortBy(sort.key)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${sortBy === sort.key
-                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                                    : "bg-zinc-800/50 text-zinc-400 border border-zinc-700/50 hover:text-white"
+                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                : "bg-zinc-800/50 text-zinc-400 border border-zinc-700/50 hover:text-white"
                                 }`}
                         >
                             {sort.label}
@@ -211,21 +210,21 @@ export default function CustomersClient({
                                     {/* Rank Badge */}
                                     <div
                                         className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${idx === 0
-                                                ? "bg-amber-500/15"
-                                                : idx === 1
-                                                    ? "bg-zinc-500/15"
-                                                    : idx === 2
-                                                        ? "bg-orange-500/15"
-                                                        : "bg-zinc-800/50"
+                                            ? "bg-amber-500/15"
+                                            : idx === 1
+                                                ? "bg-zinc-500/15"
+                                                : idx === 2
+                                                    ? "bg-orange-500/15"
+                                                    : "bg-zinc-800/50"
                                             }`}
                                     >
                                         {idx < 3 ? (
                                             <Crown
                                                 className={`w-5 h-5 ${idx === 0
-                                                        ? "text-amber-400"
-                                                        : idx === 1
-                                                            ? "text-zinc-300"
-                                                            : "text-orange-400"
+                                                    ? "text-amber-400"
+                                                    : idx === 1
+                                                        ? "text-zinc-300"
+                                                        : "text-orange-400"
                                                     }`}
                                             />
                                         ) : (
