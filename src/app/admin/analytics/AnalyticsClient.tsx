@@ -15,7 +15,6 @@ import {
     Clock,
     Crown,
     CheckCircle2,
-    XCircle,
     Activity,
 } from "lucide-react";
 import AnimatedNumber from "@/components/admin/AnimatedNumber";
@@ -206,8 +205,8 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
                                         duration: 0.5,
                                     }}
                                     className={`w-full rounded-sm ${day.revenue > 0
-                                            ? "bg-emerald-500/70 group-hover:bg-emerald-400 transition-colors"
-                                            : "bg-zinc-800/50"
+                                        ? "bg-emerald-500/70 group-hover:bg-emerald-400 transition-colors"
+                                        : "bg-zinc-800/50"
                                         }`}
                                     style={{ minHeight: "2px" }}
                                 />
@@ -349,8 +348,8 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
                                             duration: 0.4,
                                         }}
                                         className={`w-full rounded-sm ${h.count > 0
-                                                ? "bg-amber-500/60 group-hover:bg-amber-400 transition-colors"
-                                                : "bg-zinc-800/40"
+                                            ? "bg-amber-500/60 group-hover:bg-amber-400 transition-colors"
+                                            : "bg-zinc-800/40"
                                             }`}
                                         style={{ minHeight: "2px" }}
                                     />
@@ -415,12 +414,12 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
                                         <td className="px-3 py-3">
                                             <span
                                                 className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${idx === 0
-                                                        ? "bg-amber-500/20 text-amber-400"
-                                                        : idx === 1
-                                                            ? "bg-zinc-500/20 text-zinc-300"
-                                                            : idx === 2
-                                                                ? "bg-orange-500/20 text-orange-400"
-                                                                : "bg-zinc-800 text-zinc-500"
+                                                    ? "bg-amber-500/20 text-amber-400"
+                                                    : idx === 1
+                                                        ? "bg-zinc-500/20 text-zinc-300"
+                                                        : idx === 2
+                                                            ? "bg-orange-500/20 text-orange-400"
+                                                            : "bg-zinc-800 text-zinc-500"
                                                     }`}
                                             >
                                                 {idx + 1}

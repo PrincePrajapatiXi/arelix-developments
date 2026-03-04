@@ -112,7 +112,6 @@ async function getAnalyticsData() {
         ]);
 
         // Build 30-day chart data
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dailyMap: Record<string, { revenue: number; orders: number }> = {};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         dailyRevenueResult.forEach((d: any) => {
