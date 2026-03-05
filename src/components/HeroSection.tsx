@@ -148,7 +148,7 @@ export default function HeroSection() {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="font-[family-name:var(--font-display)] text-4xl font-black tracking-tight sm:text-6xl lg:text-7xl"
                 >
-                    <span className="block text-white">Arelix</span>
+                    <span className="block text-white">Catchy</span>
                     <span
                         className="block bg-gradient-to-r from-neon-green via-neon-cyan to-neon-blue bg-clip-text text-transparent"
                         style={{ backgroundSize: "200% 200%", animation: "gradient-shift 6s ease infinite" }}
@@ -188,7 +188,7 @@ export default function HeroSection() {
                         ) : (
                             <>
                                 <Copy className="h-5 w-5" />
-                                <span>Arelix Developments</span>
+                                <span>Catchy Developments</span>
                             </>
                         )}
                         {/* Hover glow overlay */}

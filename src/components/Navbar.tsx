@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: Navbar.tsx
 // PURPOSE: Fixed top navigation bar with:
-//          - Brand logo (Sword icon + "Arelix Developments")
+//          - Brand logo (Sword icon + "Catchy Developments")
 //          - Desktop category tabs with animated active indicator
 //          - Cart button
 //          - Responsive mobile menu (hamburger → slide-down)
@@ -62,7 +62,7 @@ export default function Navbar({ activeCategory, onCategoryChange }: NavbarProps
                         </div>
                         {/* Brand name */}
                         <span className="font-[family-name:var(--font-display)] text-lg font-bold tracking-wider text-white">
-                            Arelix <span className="text-neon-green">Developments</span>
+                            Catchy <span className="text-neon-green">Developments</span>
                         </span>
                     </a>
 

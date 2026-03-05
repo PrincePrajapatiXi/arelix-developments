@@ -65,7 +65,7 @@ export default function SettingsClient({
                 key: "storeName",
                 label: "Store Name",
                 icon: Store,
-                placeholder: "Arelix Store",
+                placeholder: "Catchy Store",
             },
             {
                 key: "storeDescription",
@@ -110,8 +110,8 @@ export default function SettingsClient({
                         animate={{ opacity: 1, y: 0, x: "-50%" }}
                         exit={{ opacity: 0, y: -20, x: "-50%" }}
                         className={`fixed top-6 left-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium shadow-2xl ${toast.type === "success"
-                                ? "bg-emerald-500/90 text-white"
-                                : "bg-red-500/90 text-white"
+                            ? "bg-emerald-500/90 text-white"
+                            : "bg-red-500/90 text-white"
                             }`}
                     >
                         {toast.type === "success" ? (

@@ -21,7 +21,6 @@ const quickLinks = [
     { label: "Home", url: "#" },
     { label: "Store", url: "#store" },
     { label: "Track Your Order", url: "/track-order" },
-    { label: "Rules", url: "#" },
     { label: "Support", url: "https://mail.google.com/mail/?view=cm&to=princeprajapti2589@gmail.com" },
 ];
 
@@ -63,7 +62,7 @@ export default function Footer() {
                                 <Sword className="h-4 w-4 text-neon-green" />
                             </div>
                             <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-wider text-white cursor-pointer">
-                                Arelix<span className="text-neon-green cursor-pointer">Developments</span>
+                                Catchy<span className="text-neon-green cursor-pointer">Developments</span>
                             </span>
                         </div>
                         <p className="text-xs text-white/30 leading-relaxed max-w-xs mx-auto md:mx-0">
@@ -102,10 +101,10 @@ export default function Footer() {
                 {/* ── Bottom Bar ── */}
                 <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
                     <p className="text-xs text-white/20">
-                        © 2026 Arelix Developments. Not affiliated with Mojang Studios.
+                        © 2026 Catchy Developments. Not affiliated with Mojang Studios.
                     </p>
                     <p className="flex items-center gap-1 text-xs text-white/20">
-                        Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by Arelix Developments team
+                        Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by Catchy Developments team
                     </p>
                 </div>
             </div>

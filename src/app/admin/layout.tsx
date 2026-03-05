@@ -148,7 +148,7 @@ export default function AdminLayout({
                             </div>
                             <div>
                                 <h2 className="text-white font-bold text-sm tracking-tight">
-                                    Arelix Admin
+                                    Catchy Admin
                                 </h2>
                                 <p className="text-zinc-500 text-xs">
                                     Store Management
@@ -235,7 +235,7 @@ export default function AdminLayout({
                     <div className="flex items-center gap-2">
                         <Sword className="w-5 h-5 text-emerald-400" />
                         <span className="text-white font-bold text-sm">
-                            Arelix Admin
+                            Catchy Admin
                         </span>
                     </div>
                     <div className="w-6" /> {/* Spacer for centering */}

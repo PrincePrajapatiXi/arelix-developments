@@ -14,7 +14,7 @@ export const revalidate = 60; // Cache for 60 seconds
 export async function GET() {
     try {
         // Try to get server IP from settings
-        let serverIp = "play.arelix.com"; // Default fallback
+        let serverIp = "play.catchy.com"; // Default fallback
 
         try {
             const db = await connectToDatabase();

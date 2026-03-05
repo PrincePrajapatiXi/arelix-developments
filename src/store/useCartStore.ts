@@ -152,7 +152,7 @@ export const useCartStore = create<CartState>()(
             },
         }),
         {
-            name: "arelix-cart",
+            name: "catchy-cart",
             partialize: (state: CartState) => ({ items: state.items }),
         }
     )
