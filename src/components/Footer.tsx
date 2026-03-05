@@ -13,6 +13,7 @@
 
 // ─── Imports ───────────────────────────────────────────────────
 import { useState } from "react";
+import Image from "next/image";
 import { Sword, Heart, ChevronDown, Mail } from "lucide-react";
 
 // ─── Link Data ─────────────────────────────────────────────────
@@ -58,8 +59,8 @@ export default function Footer() {
                     <div className="text-center md:text-left mb-6 md:mb-0">
                         {/* Logo */}
                         <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-neon-green/10 border border-neon-green/20 cursor-pointer">
-                                <Sword className="h-4 w-4 text-neon-green" />
+                            <div className="relative flex h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-neon-green/20 cursor-pointer bg-surface-primary">
+                                <Image src="/logo.jpg" alt="Warden SMP Logo" fill className="object-cover" />
                             </div>
                             <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-wider text-white cursor-pointer">
                                 Warden<span className="text-neon-green cursor-pointer">SMP</span>

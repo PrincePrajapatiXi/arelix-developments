@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingCart, Sword, MapPin } from "lucide-react";
 import { categories, type Category } from "@/lib/data";
 import { useCartStore } from "@/store/useCartStore";
+import Image from "next/image";
 import Link from "next/link";
 
 // ─── Props Interface ───────────────────────────────────────────
@@ -57,8 +58,8 @@ export default function Navbar({ activeCategory, onCategoryChange }: NavbarProps
                     {/* ── Brand Logo ── */}
                     <a href="#" className="flex items-center gap-2 group">
                         {/* Icon container with hover glow effect */}
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neon-green/10 border border-neon-green/20 group-hover:shadow-glow-green transition-all duration-300">
-                            <Sword className="h-5 w-5 text-neon-green" />
+                        <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-neon-green/20 group-hover:shadow-glow-green transition-all duration-300 bg-surface-primary">
+                            <Image src="/logo.jpg" alt="Warden SMP Logo" fill className="object-cover" />
                         </div>
                         {/* Brand name */}
                         <span className="font-[family-name:var(--font-display)] text-lg font-bold tracking-wider text-white">

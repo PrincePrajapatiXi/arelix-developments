@@ -17,7 +17,7 @@ import { Copy, Check, Users, ChevronDown, Zap } from "lucide-react"; // Icons
 // ─── Constants ─────────────────────────────────────────────────
 // Extracted as constants so values are easy to find and tweak.
 const SERVER_IP = "WardenSMP.hostzy.xyz:25593";       // The IP copied to clipboard
-const STATUS_API_URL = `https://api.mcsrvstat.us/3/${SERVER_IP}`; // Live server status
+const STATUS_API_URL = `https://api.mcsrvstat.us/bedrock/3/${SERVER_IP}`; // Live server status
 const STATUS_POLL_INTERVAL_MS = 60000;      // Poll every 60 seconds
 const COPY_FEEDBACK_DURATION_MS = 2000;     // "Copied!" message duration
 
@@ -153,7 +153,7 @@ export default function HeroSection() {
                         className="block bg-gradient-to-r from-neon-green via-neon-cyan to-neon-blue bg-clip-text text-transparent"
                         style={{ backgroundSize: "200% 200%", animation: "gradient-shift 6s ease infinite" }}
                     >
-                        Developments
+                        SMP
                     </span>
                 </motion.h1>
 

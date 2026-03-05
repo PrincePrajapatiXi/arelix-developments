@@ -31,7 +31,7 @@ export async function GET() {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
 
-        const res = await fetch(`https://api.mcsrvstat.us/3/${serverIp}`, {
+        const res = await fetch(`https://api.mcsrvstat.us/bedrock/3/${serverIp}`, {
             next: { revalidate: 60 },
             signal: controller.signal,
         });
