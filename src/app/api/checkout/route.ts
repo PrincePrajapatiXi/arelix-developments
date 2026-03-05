@@ -198,8 +198,7 @@ export async function POST(request: Request) {
         }
 
         // ──────────────────────────────────────────────────────
-        // 8. Log the order for manual verification
-        //    TODO: In production, save to MongoDB / database
+        // 8. Log the order to console for debugging
         // ──────────────────────────────────────────────────────
         console.log("═══════════════════════════════════════");
         console.log("📦 NEW ORDER RECEIVED");
@@ -214,6 +213,7 @@ export async function POST(request: Request) {
         // ──────────────────────────────────────────────────────
         // 8b. Send email notification
         // ──────────────────────────────────────────────────────
+        let emailSent = false;
         try {
             await sendOrderEmail({
                 orderId,
@@ -223,6 +223,7 @@ export async function POST(request: Request) {
                 items: validatedItems,
                 total: totalAmount,
             });
+            emailSent = true;
             console.log("✅ Email notification sent successfully!");
         } catch (emailErr) {
             console.error("❌ Email send failed:", emailErr);
@@ -242,6 +243,7 @@ export async function POST(request: Request) {
                 total: totalAmount,
                 ...(appliedCouponCode && { couponCode: appliedCouponCode, discount }),
                 status: "pending",
+                emailSent,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });

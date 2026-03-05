@@ -7,11 +7,22 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import { products } from "@/lib/data";
 
 export async function POST() {
     try {
+        // ── Auth Check: Only allow authenticated admins ──
+        const cookieStore = await cookies();
+        const token = cookieStore.get("admin_token")?.value;
+        if (!token || token !== process.env.ADMIN_SECRET_KEY) {
+            return NextResponse.json(
+                { error: "Unauthorized. Admin login required." },
+                { status: 401 }
+            );
+        }
+
         const db = await connectToDatabase();
         const collection = db.collection("products");
 

@@ -6,10 +6,21 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 
 export async function GET(request: Request) {
     try {
+        // ── Auth Check: Only allow authenticated admins ──
+        const cookieStore = await cookies();
+        const token = cookieStore.get("admin_token")?.value;
+        if (!token || token !== process.env.ADMIN_SECRET_KEY) {
+            return NextResponse.json(
+                { error: "Unauthorized. Admin login required." },
+                { status: 401 }
+            );
+        }
+
         const { searchParams } = new URL(request.url);
         const limit = parseInt(searchParams.get("limit") || "50");
 
