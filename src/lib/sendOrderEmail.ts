@@ -63,7 +63,7 @@ export async function sendOrderEmail(order: OrderEmailData) {
         // Header -->
         <div style="background:linear-gradient(135deg,#0f3460,#16213e);padding:24px;text-align:center;">
             <h1 style="margin:0;color:#00ff88;font-size:22px;letter-spacing:1px;">⚔️ New Order Received</h1>
-            <p style="margin:6px 0 0;color:#888;font-size:12px;">Catchy Developments</p>
+            <p style="margin:6px 0 0;color:#888;font-size:12px;">Warden SMP</p>
         </div>
 
         <!-- Order Info -->
@@ -122,7 +122,7 @@ export async function sendOrderEmail(order: OrderEmailData) {
     `;
 
     const mailOptions = {
-        from: `"⚔️ Catchy Developments" <${process.env.GMAIL_USER}>`,
+        from: `"⚔️ Warden SMP" <${process.env.GMAIL_USER}>`,
         to: process.env.NOTIFY_EMAIL,
         subject: `📦 New Order — ${order.username} — ₹${order.total.toFixed(2)}`,
         html,

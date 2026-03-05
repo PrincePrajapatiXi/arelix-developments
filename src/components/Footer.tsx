@@ -62,7 +62,7 @@ export default function Footer() {
                                 <Sword className="h-4 w-4 text-neon-green" />
                             </div>
                             <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-wider text-white cursor-pointer">
-                                Catchy<span className="text-neon-green cursor-pointer">Developments</span>
+                                Warden<span className="text-neon-green cursor-pointer">SMP</span>
                             </span>
                         </div>
                         <p className="text-xs text-white/30 leading-relaxed max-w-xs mx-auto md:mx-0">
@@ -101,10 +101,10 @@ export default function Footer() {
                 {/* ── Bottom Bar ── */}
                 <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
                     <p className="text-xs text-white/20">
-                        © {new Date().getFullYear()} Catchy Developments. Not affiliated with Mojang Studios.
+                        © {new Date().getFullYear()} Warden SMP. Not affiliated with Mojang Studios.
                     </p>
                     <p className="flex items-center gap-1 text-xs text-white/20">
-                        Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by Catchy Developments team
+                        Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by Warden SMP team
                     </p>
                 </div>
             </div>

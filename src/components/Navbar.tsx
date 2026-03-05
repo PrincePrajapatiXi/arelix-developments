@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: Navbar.tsx
 // PURPOSE: Fixed top navigation bar with:
-//          - Brand logo (Sword icon + "Catchy Developments")
+//          - Brand logo (Sword icon + "Warden SMP")
 //          - Desktop category tabs with animated active indicator
 //          - Cart button
 //          - Responsive mobile menu (hamburger → slide-down)
@@ -62,7 +62,7 @@ export default function Navbar({ activeCategory, onCategoryChange }: NavbarProps
                         </div>
                         {/* Brand name */}
                         <span className="font-[family-name:var(--font-display)] text-lg font-bold tracking-wider text-white">
-                            Catchy <span className="text-neon-green">Developments</span>
+                            Warden <span className="text-neon-green">SMP</span>
                         </span>
                     </a>
 

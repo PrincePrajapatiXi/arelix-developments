@@ -16,7 +16,7 @@ import { Copy, Check, Users, ChevronDown, Zap } from "lucide-react"; // Icons
 
 // ─── Constants ─────────────────────────────────────────────────
 // Extracted as constants so values are easy to find and tweak.
-const SERVER_IP = "play.armysmp.fun";       // The IP copied to clipboard
+const SERVER_IP = "WardenSMP.hostzy.xyz:25593";       // The IP copied to clipboard
 const STATUS_API_URL = `https://api.mcsrvstat.us/3/${SERVER_IP}`; // Live server status
 const STATUS_POLL_INTERVAL_MS = 60000;      // Poll every 60 seconds
 const COPY_FEEDBACK_DURATION_MS = 2000;     // "Copied!" message duration
@@ -148,7 +148,7 @@ export default function HeroSection() {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="font-[family-name:var(--font-display)] text-4xl font-black tracking-tight sm:text-6xl lg:text-7xl"
                 >
-                    <span className="block text-white">Catchy</span>
+                    <span className="block text-white">Warden</span>
                     <span
                         className="block bg-gradient-to-r from-neon-green via-neon-cyan to-neon-blue bg-clip-text text-transparent"
                         style={{ backgroundSize: "200% 200%", animation: "gradient-shift 6s ease infinite" }}
@@ -175,7 +175,7 @@ export default function HeroSection() {
                     transition={{ duration: 0.6, delay: 0.6 }}
                     className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
                 >
-                    {/* Copy IP Button — switches between "play.armysmp.fun" and "IP Copied!" */}
+                    {/* Copy IP Button — switches between "WardenSMP.hostzy.xyz:25593" and "IP Copied!" */}
                     <button
                         onClick={copyIP}
                         className="group relative flex items-center gap-3 rounded-xl border border-neon-green/30 bg-neon-green/10 px-8 py-4 text-sm font-bold text-neon-green transition-all duration-300 hover:bg-neon-green/20 hover:shadow-glow-green hover:scale-105 active:scale-95 cursor-pointer"
@@ -188,7 +188,7 @@ export default function HeroSection() {
                         ) : (
                             <>
                                 <Copy className="h-5 w-5" />
-                                <span>Catchy Developments</span>
+                                <span>Warden SMP</span>
                             </>
                         )}
                         {/* Hover glow overlay */}

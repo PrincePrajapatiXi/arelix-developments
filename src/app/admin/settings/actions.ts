@@ -41,7 +41,7 @@ export async function getSettings(): Promise<StoreSettings> {
         }
 
         return {
-            storeName: "Catchy Store",
+            storeName: "Warden Store",
             storeDescription: "",
             upiId: "",
             contactEmail: "",
@@ -51,7 +51,7 @@ export async function getSettings(): Promise<StoreSettings> {
     } catch (error) {
         console.error("Get settings error:", error);
         return {
-            storeName: "Catchy Store",
+            storeName: "Warden Store",
             storeDescription: "",
             upiId: "",
             contactEmail: "",

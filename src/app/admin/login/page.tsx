@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
                         Admin Panel
                     </h1>
                     <p className="text-zinc-500 text-sm mt-1">
-                        Catchy Developments Store
+                        Warden SMP Store
                     </p>
                 </div>
 

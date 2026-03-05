@@ -65,7 +65,7 @@ export default function SettingsClient({
                 key: "storeName",
                 label: "Store Name",
                 icon: Store,
-                placeholder: "Catchy Store",
+                placeholder: "Warden Store",
             },
             {
                 key: "storeDescription",

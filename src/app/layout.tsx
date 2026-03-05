@@ -36,12 +36,12 @@ const orbitron = Orbitron({
 // tags in the <head> of every page automatically.
 
 export const metadata: Metadata = {
-  title: "Catchy Developments Store — Ranks, Kits, Keys & More",
+  title: "Warden SMP Store — Ranks, Kits, Keys & More",
   description:
-    "Upgrade your Minecraft experience on Catchy Developments. Buy exclusive ranks, powerful kits, rare crate keys, and unique cosmetics. Instant delivery.",
+    "Upgrade your Minecraft experience on Warden SMP. Buy exclusive ranks, powerful kits, rare crate keys, and unique cosmetics. Instant delivery.",
   keywords: [
     "Minecraft",
-    "Catchy Developments",
+    "Warden SMP",
     "Minecraft store",
     "ranks",
     "kits",
@@ -49,10 +49,10 @@ export const metadata: Metadata = {
     "Minecraft server",
   ],
   openGraph: {
-    title: "Catchy Developments Store",
+    title: "Warden SMP Store",
     description: "Premium Minecraft server store — Ranks, Kits, Keys & Cosmetics",
     url: "https://buildwithcatchy.vercel.app",
-    siteName: "Catchy Developments",
+    siteName: "Warden SMP",
     type: "website",
   },
 };
