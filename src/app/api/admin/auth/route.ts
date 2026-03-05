@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 // ─── POST: Login ───────────────────────────────────────────────
 
@@ -50,13 +51,7 @@ export async function POST(request: Request) {
 // ─── DELETE: Logout ────────────────────────────────────────────
 
 export async function DELETE() {
-    const response = NextResponse.json({ success: true });
-    response.cookies.set("admin_token", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 0, // Expire immediately
-    });
-    return response;
+    const cookieStore = await cookies();
+    cookieStore.delete("admin_token");
+    return NextResponse.json({ success: true });
 }
