@@ -1,4 +1,4 @@
-# ⚔️ Army SMP Store — Catchy Developments
+# ⚔️ Warden SMP Store
 
 > 🎮 A premium Minecraft server store built with **Next.js**, **Tailwind CSS**, and **Framer Motion**
 
@@ -120,10 +120,10 @@ Cart → Username Input → UPI Payment → Order Confirmation
 
 ## 📄 License
 
-This project is proprietary to **Catchy Developments**.
+This project is proprietary to **Warden SMP**.
 
 ---
 
 <p align="center">
-  Made with ❤️ by <b>Catchy Developments</b>
+  Made with ❤️ by <b>Warden SMP</b>
 </p>

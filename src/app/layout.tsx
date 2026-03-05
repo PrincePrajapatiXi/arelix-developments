@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Warden SMP Store",
     description: "Premium Minecraft server store — Ranks, Kits, Keys & Cosmetics",
-    url: "https://buildwithcatchy.vercel.app",
+    url: "https://wardensmp.vercel.app",
     siteName: "Warden SMP",
     type: "website",
   },
