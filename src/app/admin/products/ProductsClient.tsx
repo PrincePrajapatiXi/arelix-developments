@@ -133,9 +133,9 @@ export default function ProductsClient({
             return;
         }
 
-        // Limit client side size check to prevent Next.js 413 errors (4MB limit)
-        if (file.size > 4 * 1024 * 1024) {
-            alert("Image is too large. Please choose an image under 4MB.");
+        // Limit client side size check to prevent Next.js 413 errors (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+            alert("Image is too large. Please choose an image under 10MB.");
             return;
         }
 
