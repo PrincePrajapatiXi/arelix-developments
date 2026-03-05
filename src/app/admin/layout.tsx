@@ -18,7 +18,6 @@ import {
     LogOut,
     Menu,
     X,
-    Sword,
     ChevronRight,
     BarChart3,
     Users,

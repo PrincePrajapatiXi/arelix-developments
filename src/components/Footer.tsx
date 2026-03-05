@@ -14,7 +14,7 @@
 // ─── Imports ───────────────────────────────────────────────────
 import { useState } from "react";
 import Image from "next/image";
-import { Sword, Heart, ChevronDown, Mail } from "lucide-react";
+import { Heart, ChevronDown, Mail } from "lucide-react";
 
 // ─── Link Data ─────────────────────────────────────────────────
 

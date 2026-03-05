@@ -1,4 +1,4 @@
-// ═══════════════════════════════════════════════════════════════
+ // ═══════════════════════════════════════════════════════════════
 // FILE: layout.tsx  (Root Layout)
 // PURPOSE: The top-level layout that wraps EVERY page in the app.
 //          It loads fonts, sets metadata (SEO), and renders the

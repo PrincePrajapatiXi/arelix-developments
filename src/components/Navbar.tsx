@@ -13,7 +13,7 @@
 // ─── Imports ───────────────────────────────────────────────────
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, Sword, MapPin } from "lucide-react";
+import { Menu, X, ShoppingCart, MapPin } from "lucide-react";
 import { categories, type Category } from "@/lib/data";
 import { useCartStore } from "@/store/useCartStore";
 import Image from "next/image";
