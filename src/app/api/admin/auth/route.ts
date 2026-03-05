@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
         if (password !== secretKey) {
             return NextResponse.json(
-                { error: "Invalid password." },
+                { error: "Access Denied" },
                 { status: 401 }
             );
         }
