@@ -101,7 +101,7 @@ export default function Footer() {
                 {/* ── Bottom Bar ── */}
                 <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
                     <p className="text-xs text-white/20">
-                        © 2026 Catchy Developments. Not affiliated with Mojang Studios.
+                        © {new Date().getFullYear()} Catchy Developments. Not affiliated with Mojang Studios.
                     </p>
                     <p className="flex items-center gap-1 text-xs text-white/20">
                         Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by Catchy Developments team

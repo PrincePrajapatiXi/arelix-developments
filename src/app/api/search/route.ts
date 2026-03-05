@@ -14,23 +14,39 @@
 import { NextResponse } from "next/server"; // Next.js helper for sending JSON responses
 import { connectToDatabase } from "@/lib/mongodb"; // Our MongoDB connection helper
 
+// ─── Simple In-Memory Rate Limiter ─────────────────────────────
+// Limits each IP to 30 search requests per minute to prevent abuse.
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 30;       // Max requests per window
+const RATE_WINDOW = 60000;   // 1 minute window
+
+function isRateLimited(ip: string): boolean {
+    const now = Date.now();
+    const entry = rateLimitMap.get(ip);
+    if (!entry || now > entry.resetAt) {
+        rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
+        return false;
+    }
+    entry.count++;
+    return entry.count > RATE_LIMIT;
+}
+
 /**
  * GET /api/search?q=<query>
  *
  * Searches for products matching the given query string.
- *
- * How it works (step by step):
- *   Step 1: Extract the search query from the URL (the "q" parameter)
- *   Step 2: If the query is empty, return an empty results array
- *   Step 3: Connect to MongoDB
- *   Step 4: Search the "products" collection using a case-insensitive regex
- *           across three fields: name, description, and category
- *   Step 5: Limit results to 10 products (to keep it fast)
- *   Step 6: Serialize the results (convert MongoDB _id to string, format dates)
- *   Step 7: Return the results as JSON
  */
 export async function GET(request: Request) {
     try {
+        // Rate limiting check
+        const ip = request.headers.get("x-forwarded-for") || "unknown";
+        if (isRateLimited(ip)) {
+            return NextResponse.json(
+                { error: "Too many requests. Please wait a moment." },
+                { status: 429 }
+            );
+        }
+
         // Step 1: Extract the search query from the URL
         // Example URL: /api/search?q=warrior → query = "warrior"
         const { searchParams } = new URL(request.url);

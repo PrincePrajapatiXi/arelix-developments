@@ -1,30 +1,57 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: RecentPurchases.tsx
 // PURPOSE: A horizontally scrolling "ticker" that shows recent
-//          purchases as social proof (e.g., "xXDragonSlayerXx
-//          bought Emperor Rank • 2 min ago"). Creates urgency
-//          and trust by showing that other players are buying.
+//          purchases as social proof. Fetches real orders from
+//          MongoDB, with mock data fallback if no orders exist.
 // LOCATION: src/components/RecentPurchases.tsx
 // ═══════════════════════════════════════════════════════════════
 
-"use client"; // Required for Framer Motion
+"use client";
 
 // ─── Imports ───────────────────────────────────────────────────
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingBag } from "lucide-react";           // Icon for section label
-import { recentPurchases } from "@/lib/data";          // Mock purchase data array
+import { ShoppingBag } from "lucide-react";
+import { recentPurchases as mockPurchases } from "@/lib/data";
+
+interface PurchaseItem {
+    id: string;
+    username: string;
+    item: string;
+    time: string;
+    avatar: string;
+}
 
 // ═══════════════════════════════════════════════════════════════
 // COMPONENT: RecentPurchases
 // ═══════════════════════════════════════════════════════════════
 
 export default function RecentPurchases() {
+    const [purchases, setPurchases] = useState<PurchaseItem[]>([]);
+
+    useEffect(() => {
+        async function fetchRecentOrders() {
+            try {
+                const res = await fetch("/api/orders/recent");
+                const data = await res.json();
+                if (data.purchases && data.purchases.length > 0) {
+                    setPurchases(data.purchases);
+                } else {
+                    // Fallback to mock data if no real orders
+                    setPurchases(mockPurchases.map(p => ({ ...p, id: String(p.id) })));
+                }
+            } catch {
+                // Fallback to mock data on error
+                setPurchases(mockPurchases.map(p => ({ ...p, id: String(p.id) })));
+            }
+        }
+        fetchRecentOrders();
+    }, []);
+
     // ── Duplicate the data array for seamless infinite scrolling ──
-    // The CSS animation shifts the strip left by 50%. Since we have
-    // TWO copies side by side, when the first copy scrolls off-screen,
-    // the second copy is already in the exact same position — creating
-    // a seamless loop without any visible "jump".
-    const duplicated = [...recentPurchases, ...recentPurchases];
+    const duplicated = [...purchases, ...purchases];
+
+    if (purchases.length === 0) return null;
 
     return (
         <section className="relative overflow-hidden border-y border-white/5 bg-surface-primary/40 py-6">
@@ -44,13 +71,12 @@ export default function RecentPurchases() {
 
             {/* ── Scrolling Ticker ── */}
             <div className="ticker-container relative">
-                {/* Left fade edge: makes items appear to "emerge" from the left */}
+                {/* Left fade edge */}
                 <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-background/80 to-transparent" />
-                {/* Right fade edge: makes items appear to "disappear" on the right */}
+                {/* Right fade edge */}
                 <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-background/80 to-transparent" />
 
-                {/* Ticker strip: auto-scrolls via the `ticker` CSS animation (30s loop).
-            Pauses on hover thanks to `.ticker-container:hover` rule in globals.css. */}
+                {/* Ticker strip */}
                 <div className="ticker-content flex w-max gap-4 animate-[ticker_30s_linear_infinite]">
                     {duplicated.map((purchase, i) => (
                         <div

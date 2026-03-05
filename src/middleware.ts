@@ -1,8 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: middleware.ts
-// PURPOSE: Protects all /admin/* routes (except /admin/login).
+// PURPOSE: Protects all /admin/* routes (except /admin/login)
+//          and /api/admin/* API routes (except /api/admin/auth).
 //          Checks for a valid admin_token cookie.
-//          Redirects to /admin/login if not authenticated.
+//          Pages redirect to /admin/login, APIs return 401 JSON.
 // LOCATION: src/middleware.ts
 // ═══════════════════════════════════════════════════════════════
 
@@ -24,7 +25,14 @@ export function middleware(request: NextRequest) {
     const adminToken = request.cookies.get("admin_token")?.value;
 
     if (!adminToken || adminToken !== process.env.ADMIN_SECRET_KEY) {
-        // Not authenticated → redirect to login
+        // API routes → return 401 JSON
+        if (pathname.startsWith("/api/admin")) {
+            return NextResponse.json(
+                { error: "Unauthorized. Admin login required." },
+                { status: 401 }
+            );
+        }
+        // Admin pages → redirect to login
         const loginUrl = new URL("/admin/login", request.url);
         return NextResponse.redirect(loginUrl);
     }
@@ -32,7 +40,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-// Only run middleware on /admin/* routes
+// Protect both admin pages and admin API routes
 export const config = {
-    matcher: ["/admin/:path*"],
+    matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

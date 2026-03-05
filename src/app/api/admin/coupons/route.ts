@@ -8,13 +8,25 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import { logActivity } from "@/lib/logActivity";
+
+// ── Auth Helper: Verify admin cookie ────────────────────────────
+async function verifyAdmin() {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin_token")?.value;
+    return token && token === process.env.ADMIN_SECRET_KEY;
+}
 
 // ─── GET: List All Coupons ─────────────────────────────────────
 
 export async function GET() {
     try {
+        if (!(await verifyAdmin())) {
+            return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+        }
+
         const db = await connectToDatabase();
         const coupons = await db
             .collection("coupons")
@@ -41,6 +53,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        if (!(await verifyAdmin())) {
+            return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+        }
+
         const body = await request.json();
         const {
             code,
@@ -128,6 +144,10 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
+        if (!(await verifyAdmin())) {
+            return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+        }
+
         const body = await request.json();
         const {
             originalCode,
@@ -227,6 +247,10 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
+        if (!(await verifyAdmin())) {
+            return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const code = searchParams.get("code");
 
