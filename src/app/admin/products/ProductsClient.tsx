@@ -126,6 +126,46 @@ export default function ProductsClient({
         });
     };
 
+    // ── Compress Image Client-Side ─────────────────────────────
+    // Uses Canvas API to resize and compress images before upload.
+    // This keeps the file well under Vercel's serverless body limit.
+    const compressImage = (file: File, maxWidth = 1200, quality = 0.8): Promise<File> => {
+        return new Promise((resolve, reject) => {
+            const img = new window.Image();
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                let { width, height } = img;
+
+                // Scale down if wider than maxWidth
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                if (!ctx) { resolve(file); return; }
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (!blob) { resolve(file); return; }
+                        const compressed = new File([blob], file.name, {
+                            type: "image/webp",
+                            lastModified: Date.now(),
+                        });
+                        resolve(compressed);
+                    },
+                    "image/webp",
+                    quality
+                );
+            };
+            img.onerror = () => reject(new Error("Failed to load image"));
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
     // ── Handle Image Upload ────────────────────────────────────
     const handleImageUpload = async (file: File) => {
         if (!file.type.startsWith("image/")) {
@@ -133,7 +173,7 @@ export default function ProductsClient({
             return;
         }
 
-        // Limit client side size check to prevent Next.js 413 errors (10MB limit)
+        // Limit client side size check (10MB raw limit)
         if (file.size > 10 * 1024 * 1024) {
             alert("Image is too large. Please choose an image under 10MB.");
             return;
@@ -141,8 +181,11 @@ export default function ProductsClient({
 
         setIsUploading(true);
         try {
+            // Compress image client-side before uploading
+            const compressed = await compressImage(file);
+
             const formData = new FormData();
-            formData.append("image", file);
+            formData.append("image", compressed);
 
             const result = await uploadImageToImgBB(formData);
 
