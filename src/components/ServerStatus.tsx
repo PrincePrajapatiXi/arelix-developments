@@ -26,9 +26,16 @@ export default function ServerStatus() {
 
     const fetchStatus = async () => {
         try {
-            const res = await fetch("/api/server-status");
-            const json = await res.json();
-            setData(json);
+            const res = await fetch(`https://api.mcsrvstat.us/bedrock/3/WardenSMP.hostzy.xyz:25593`);
+            const data = await res.json();
+            setData({
+                online: data.online ?? false,
+                players: {
+                    online: data.players?.online ?? 0,
+                    max: data.players?.max ?? 0
+                },
+                serverIp: "WardenSMP.hostzy.xyz:25593"
+            });
         } catch {
             setData({ online: false, players: { online: 0, max: 0 } });
         } finally {
@@ -59,8 +66,8 @@ export default function ServerStatus() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
             className={`flex items-center gap-2 px-3 py-1.5 border rounded-full backdrop-blur-sm transition-all ${data.online
-                    ? "bg-emerald-500/5 border-emerald-500/20"
-                    : "bg-red-500/5 border-red-500/20"
+                ? "bg-emerald-500/5 border-emerald-500/20"
+                : "bg-red-500/5 border-red-500/20"
                 }`}
             title={data.serverIp ? `Server: ${data.serverIp}` : "Minecraft Server"}
         >
