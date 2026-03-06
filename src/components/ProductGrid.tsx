@@ -25,6 +25,7 @@ import ProductDetailModal from "./ProductDetailModal";
 
 interface ProductGridProps {
     activeCategory: Category;
+    initialProducts?: Product[];
 }
 
 // ─── Category Display Names ────────────────────────────────────
@@ -57,10 +58,10 @@ const ROW_CLASSES =
 // COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
-export default function ProductGrid({ activeCategory }: ProductGridProps) {
+export default function ProductGrid({ activeCategory, initialProducts = [] }: ProductGridProps) {
     // ── Store Data State ──
-    const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [products, setProducts] = useState<Product[]>(initialProducts);
+    const [isLoading, setIsLoading] = useState(!initialProducts.length);
 
     // ── Search & Sort State ──
     const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +72,9 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
 
     // ── Fetch Live Products ──
     useEffect(() => {
+        // Only fetch on client if we didn't receive initial products
+        if (initialProducts.length > 0) return;
+
         async function fetchProducts() {
             setIsLoading(true);
             try {
@@ -84,7 +88,7 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
         }
 
         fetchProducts();
-    }, []);
+    }, [initialProducts]);
 
     // ── Filter + Sort products ──
     const processedProducts = useMemo(() => {

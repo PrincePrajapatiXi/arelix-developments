@@ -22,7 +22,7 @@ const quickLinks = [
     { label: "Home", url: "#" },
     { label: "Store", url: "#store" },
     { label: "Track Your Order", url: "/track-order" },
-    { label: "Support", url: "https://mail.google.com/mail/?view=cm&to=princeprajapti2589@gmail.com" },
+    { label: "Support", url: "mailto:support@devzen.store" },
 ];
 
 const communityLinks = [
@@ -59,11 +59,12 @@ export default function Footer() {
                     <div className="text-center md:text-left mb-6 md:mb-0">
                         {/* Logo */}
                         <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
-                            <div className="relative flex h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-neon-green/20 cursor-pointer bg-surface-primary">
-                                <Image src="/logo.jpg" alt="Warden SMP Logo" fill className="object-cover" />
+                            <div className="relative flex h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-transparent cursor-pointer">
+                                <Image src="/devzen-logo.svg" alt="DevZen Logo" fill className="object-contain" />
                             </div>
-                            <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-wider text-white cursor-pointer">
-                                Warden<span className="text-neon-green cursor-pointer">SMP</span>
+                            <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-wider cursor-pointer">
+                                <span className="text-[#288951]">Dev</span>
+                                <span className="text-[#103821]">Zen</span>
                             </span>
                         </div>
                         <p className="text-xs text-white/30 leading-relaxed max-w-xs mx-auto md:mx-0">
@@ -72,11 +73,11 @@ export default function Footer() {
                         </p>
                         {/* Contact Email */}
                         <a
-                            href="https://mail.google.com/mail/?view=cm&to=princeprajapti2589@gmail.com"
+                            href="mailto:support@devzen.store"
                             className="mt-3 inline-flex items-center gap-2 text-xs text-white/30 hover:text-neon-green transition-colors duration-200"
                         >
                             <Mail className="h-3.5 w-3.5" />
-                            princeprajapti2589@gmail.com
+                            support@devzen.store
                         </a>
                     </div>
 
@@ -102,10 +103,10 @@ export default function Footer() {
                 {/* ── Bottom Bar ── */}
                 <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
                     <p className="text-xs text-white/20">
-                        © {new Date().getFullYear()} Warden SMP. Not affiliated with Mojang Studios.
+                        © {new Date().getFullYear()} DevZen. Not affiliated with Mojang Studios.
                     </p>
                     <p className="flex items-center gap-1 text-xs text-white/20">
-                        Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by Warden SMP team
+                        Made with <Heart className="h-3 w-3 text-neon-pink/50" /> by DevZen team
                     </p>
                 </div>
             </div>

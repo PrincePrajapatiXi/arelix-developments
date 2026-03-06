@@ -48,7 +48,7 @@ type Edition = "java" | "bedrock";
 const UPI_ID = "princeprajapti2589-1@okaxis";
 
 /** Payee name shown in UPI payment apps */
-const PAYEE_NAME = "Warden SMP";
+const PAYEE_NAME = "DevZen";
 
 // ─── Slide Animation Variants ──────────────────────────────────
 // Used for smooth left/right sliding between checkout steps.

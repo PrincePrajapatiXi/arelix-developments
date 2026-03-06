@@ -26,18 +26,21 @@ export default function ServerStatus() {
 
     const fetchStatus = async () => {
         try {
+            // Reverting to the original Hostzy API since it is actively returning the 48/50 count
             const res = await fetch(`https://api.mcsrvstat.us/bedrock/3/WardenSMP.hostzy.xyz:25593`);
             const data = await res.json();
+
+            // Mocking the IP display to say play.devzen.net
             setData({
                 online: data.online ?? false,
                 players: {
                     online: data.players?.online ?? 0,
                     max: data.players?.max ?? 0
                 },
-                serverIp: "WardenSMP.hostzy.xyz:25593"
+                serverIp: "play.devzen.net"
             });
         } catch {
-            setData({ online: false, players: { online: 0, max: 0 } });
+            setData({ online: false, players: { online: 0, max: 0 }, serverIp: "play.devzen.net" });
         } finally {
             setLoading(false);
         }

@@ -32,18 +32,22 @@ import { connectToDatabase } from "@/lib/mongodb";  // Our MongoDB connection he
  */
 export async function GET(request: Request) {
     try {
-        // Step 1: Get the orderId from the URL
-        // Example: /api/orders/track?orderId=ORD-17385abc → orderId = "ORD-17385abc"
+        // Step 1: Get the orderId from the URL and clean it up
         const { searchParams } = new URL(request.url);
-        const orderId = searchParams.get("orderId")?.trim();
+        let orderId = searchParams.get("orderId")?.trim();
 
-        // Step 2: Validate — if no Order ID was provided, return a 400 error
-        // (A "400 Bad Request" means the client sent an incomplete request)
+        // Validate — if no Order ID was provided, return a 400 error
         if (!orderId) {
             return NextResponse.json(
                 { error: "Order ID is required." },
                 { status: 400 }
             );
+        }
+
+        // Auto-fix: If the user didn't type "ORD-", add it for them
+        // This makes it so both '17385abc' and 'ORD-17385abc' work seamlessly
+        if (!orderId.toUpperCase().startsWith("ORD-")) {
+            orderId = `ORD-${orderId}`;
         }
 
         // Step 3: Connect to MongoDB and look up the order

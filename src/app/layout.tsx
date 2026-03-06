@@ -1,4 +1,4 @@
- // ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // FILE: layout.tsx  (Root Layout)
 // PURPOSE: The top-level layout that wraps EVERY page in the app.
 //          It loads fonts, sets metadata (SEO), and renders the
@@ -36,24 +36,49 @@ const orbitron = Orbitron({
 // tags in the <head> of every page automatically.
 
 export const metadata: Metadata = {
-  title: "Warden SMP Store — Ranks, Kits, Keys & More",
+  title: "DevZen Store — Premium Ranks, Kits & Cosmetics",
   description:
-    "Upgrade your Minecraft experience on Warden SMP. Buy exclusive ranks, powerful kits, rare crate keys, and unique cosmetics. Instant delivery.",
+    "Upgrade your gameplay on DevZen. Buy exclusive ranks, powerful kits, rare crate keys, and unique cosmetics. Instant delivery guaranteed.",
   keywords: [
     "Minecraft",
-    "Warden SMP",
+    "DevZen",
     "Minecraft store",
     "ranks",
     "kits",
     "crate keys",
     "Minecraft server",
   ],
+  authors: [{ name: "DevZen" }],
+  creator: "DevZen",
+  publisher: "DevZen",
   openGraph: {
-    title: "Warden SMP Store",
+    title: "DevZen Store",
     description: "Premium Minecraft server store — Ranks, Kits, Keys & Cosmetics",
-    url: "https://wardensmp.vercel.app",
-    siteName: "Warden SMP",
+    url: "https://devzen.vercel.app",
+    siteName: "DevZen",
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "/devzen-text.png",
+        width: 1200,
+        height: 630,
+        alt: "DevZen Store Cover Image",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DevZen Store",
+    description: "Premium Minecraft server store — Ranks, Kits, Keys & Cosmetics",
+    images: ["/devzen-text.png"],
+  },
+  icons: {
+    icon: [
+      { url: "/devzen-logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/devzen-logo.svg",
+    apple: "/devzen-logo.svg",
   },
 };
 

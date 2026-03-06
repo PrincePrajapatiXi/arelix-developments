@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
 // FILE: Navbar.tsx
 // PURPOSE: Fixed top navigation bar with:
-//          - Brand logo (Sword icon + "Warden SMP")
+//          - Brand logo (Sword icon + "DevZen")
 //          - Desktop category tabs with animated active indicator
 //          - Cart button
 //          - Responsive mobile menu (hamburger → slide-down)
@@ -56,16 +56,17 @@ export default function Navbar({ activeCategory, onCategoryChange }: NavbarProps
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
 
                     {/* ── Brand Logo ── */}
-                    <a href="#" className="flex items-center gap-2 group">
+                    <Link href="/" className="flex items-center gap-2 group">
                         {/* Icon container with hover glow effect */}
-                        <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-neon-green/20 group-hover:shadow-glow-green transition-all duration-300 bg-surface-primary">
-                            <Image src="/logo.jpg" alt="Warden SMP Logo" fill className="object-cover" />
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 overflow-hidden rounded-lg group-hover:shadow-glow-green transition-all duration-300">
+                            <Image src="/devzen-logo.svg" alt="DevZen Logo" fill className="object-contain" />
                         </div>
                         {/* Brand name */}
-                        <span className="font-[family-name:var(--font-display)] text-lg font-bold tracking-wider text-white">
-                            Warden <span className="text-neon-green">SMP</span>
+                        <span className="font-[family-name:var(--font-display)] text-lg font-bold tracking-wider">
+                            <span className="text-[#288951]">Dev</span>
+                            <span className="text-[#103821]">Zen</span>
                         </span>
-                    </a>
+                    </Link>
 
                     {/* ── Desktop Category Tabs (hidden on mobile) ──
             Renders a pill-shaped tab bar. The active tab has an animated

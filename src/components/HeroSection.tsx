@@ -13,6 +13,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";          // For entrance animations
 import { Copy, Check, Users, ChevronDown, Zap } from "lucide-react"; // Icons
+import Image from "next/image";
 
 // ─── Constants ─────────────────────────────────────────────────
 // Extracted as constants so values are easy to find and tweak.
@@ -141,20 +142,15 @@ export default function HeroSection() {
                     <span>Demo</span>
                 </motion.div>
 
-                {/* Main Title: two-line heading with animated gradient on second line */}
+                {/* Main Title: single-line heading with animated gradient on second part */}
                 <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.2 }}
-                    className="font-[family-name:var(--font-display)] text-4xl font-black tracking-tight sm:text-6xl lg:text-7xl"
+                    className="font-[family-name:var(--font-display)] text-5xl font-black tracking-tight sm:text-7xl lg:text-8xl mt-2 mb-6"
                 >
-                    <span className="block text-white">Warden</span>
-                    <span
-                        className="block bg-gradient-to-r from-neon-green via-neon-cyan to-neon-blue bg-clip-text text-transparent"
-                        style={{ backgroundSize: "200% 200%", animation: "gradient-shift 6s ease infinite" }}
-                    >
-                        SMP
-                    </span>
+                    <span className="text-[#288951]">Dev</span>
+                    <span className="text-[#103821]">Zen</span>
                 </motion.h1>
 
                 {/* Subtitle: short description of what the store offers */}
@@ -188,7 +184,7 @@ export default function HeroSection() {
                         ) : (
                             <>
                                 <Copy className="h-5 w-5" />
-                                <span>Warden SMP</span>
+                                <span>DevZen</span>
                             </>
                         )}
                         {/* Hover glow overlay */}

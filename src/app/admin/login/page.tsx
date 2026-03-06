@@ -61,11 +61,13 @@ export default function AdminLoginPage() {
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/20 mb-4">
                         <Shield className="w-10 h-10 text-emerald-400" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">
-                        Admin Panel
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        <span className="text-[#288951]">Dev</span>
+                        <span className="text-[#103821]">Zen </span>
+                        <span className="text-white">Panel</span>
                     </h1>
                     <p className="text-zinc-500 text-sm mt-1">
-                        Warden SMP Store
+                        Secure Store Management
                     </p>
                 </div>
 

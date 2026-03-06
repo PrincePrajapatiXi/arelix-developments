@@ -143,12 +143,14 @@ export default function AdminLayout({
                 <div className="px-6 py-6 border-b border-zinc-800/50">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="relative w-10 h-10 flex-shrink-0 overflow-hidden rounded-xl shadow-lg shadow-emerald-500/20 bg-zinc-900 border border-zinc-800">
-                                <Image src="/logo.jpg" alt="Warden SMP Logo" fill className="object-cover" />
+                            <div className="relative w-10 h-10 flex-shrink-0 overflow-hidden rounded-xl shadow-lg bg-transparent">
+                                <Image src="/devzen-logo.svg" alt="DevZen Logo" fill className="object-contain" />
                             </div>
                             <div>
-                                <h2 className="text-white font-bold text-sm tracking-tight">
-                                    Warden Admin
+                                <h2 className="font-bold text-sm tracking-tight">
+                                    <span className="text-[#288951]">Dev</span>
+                                    <span className="text-[#103821]">Zen </span>
+                                    <span className="text-white">Admin</span>
                                 </h2>
                                 <p className="text-zinc-500 text-xs">
                                     Store Management
@@ -233,11 +235,13 @@ export default function AdminLayout({
                         <Menu className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-2">
-                        <div className="relative w-7 h-7 flex-shrink-0 overflow-hidden rounded-md border border-zinc-700 bg-zinc-900">
-                            <Image src="/logo.jpg" alt="Warden SMP Logo" fill className="object-cover" />
+                        <div className="relative w-7 h-7 flex-shrink-0 overflow-hidden bg-transparent">
+                            <Image src="/devzen-logo.svg" alt="DevZen Logo" fill className="object-contain" />
                         </div>
-                        <span className="text-white font-bold text-sm">
-                            Warden Admin
+                        <span className="font-bold text-sm">
+                            <span className="text-[#288951]">Dev</span>
+                            <span className="text-[#103821]">Zen </span>
+                            <span className="text-white">Admin</span>
                         </span>
                     </div>
                     <div className="w-6" /> {/* Spacer for centering */}

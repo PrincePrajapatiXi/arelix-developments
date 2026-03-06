@@ -10,7 +10,7 @@
 
 "use client"; // Required because we use the `useState` hook
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ─── Component Imports ─────────────────────────────────────────
 import Navbar from "@/components/Navbar";
@@ -23,7 +23,8 @@ import ToastContainer from "@/components/Toast";    // "Added to cart!" notifica
 import ServerStatus from "@/components/ServerStatus"; // MC server status widget
 
 // ─── Type Imports ──────────────────────────────────────────────
-import { type Category } from "@/lib/data";
+import { type Category, type Product } from "@/lib/data";
+import { getLiveStoreProducts } from "@/app/actions/productActions";
 
 /**
  * Home — The root page rendered at URL "/".
@@ -36,6 +37,14 @@ import { type Category } from "@/lib/data";
 export default function Home() {
   // Shared state: which product category is currently selected
   const [activeCategory, setActiveCategory] = useState<Category>("all");
+  const [initialProducts, setInitialProducts] = useState<Product[]>([]);
+
+  // Because the layout has 'use client' all over it, doing a quick mount fetch 
+  // is one way, but we can just fetch on mount immediately rather than deep 
+  // in the grid to at least make it parallel with the Hero loading
+  useEffect(() => {
+    getLiveStoreProducts().then(setInitialProducts).catch(console.error);
+  }, []);
 
   return (
     <>
@@ -58,7 +67,7 @@ export default function Home() {
         <RecentPurchases />
 
         {/* ── Product Grid — filterable catalog of store items ── */}
-        <ProductGrid activeCategory={activeCategory} />
+        <ProductGrid activeCategory={activeCategory} initialProducts={initialProducts} />
       </main>
 
       {/* ── Footer — brand info, links, legal ── */}
