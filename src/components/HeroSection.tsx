@@ -13,7 +13,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";          // For entrance animations
 import { Copy, Check, Users, ChevronDown, Zap } from "lucide-react"; // Icons
-import Image from "next/image";
 
 // ─── Constants ─────────────────────────────────────────────────
 // Extracted as constants so values are easy to find and tweak.
