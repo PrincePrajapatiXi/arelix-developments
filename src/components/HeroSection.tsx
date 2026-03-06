@@ -138,7 +138,7 @@ export default function HeroSection() {
                     className="mb-6 inline-flex items-center gap-2 rounded-full border border-neon-green/20 bg-neon-green/5 px-4 py-1.5 text-xs font-medium text-neon-green backdrop-blur-sm"
                 >
                     <Zap className="h-3 w-3" />
-                    <span>Demo</span>
+                    <span> Season 1 </span>
                 </motion.div>
 
                 {/* Main Title: single-line heading with animated gradient on second part */}
